@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Eclipse CSV Editor
+Bundle-SymbolicName: org.fhsolution.eclipse.plugins.cvsedit;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.fhsolution.eclipse.plugins.csvedit.Activator
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.core.resources,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/SuperCSV-1.20.jar
