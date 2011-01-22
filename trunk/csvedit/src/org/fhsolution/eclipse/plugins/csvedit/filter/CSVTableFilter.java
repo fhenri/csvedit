@@ -1,5 +1,8 @@
 package org.fhsolution.eclipse.plugins.csvedit.filter;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
@@ -12,13 +15,25 @@ import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 public class CSVTableFilter extends ViewerFilter {
 
     private String searchString;
+    private Pattern searchPattern;
 
     /**
+     * Build a pattern. we use pattern so we can make non case sensitive search
+     *
      * @param s string to search
      */
-    public void setSearchText (String s) {
+    public void setSearchText (String s, boolean isCaseSensitive) {
         // Search must be a substring of the existing value
         this.searchString = ".*" + s + ".*";
+        if (isCaseSensitive) {
+            System.out.println("case sensitive search");
+            searchPattern =
+                Pattern.compile(searchString);
+        } else {
+            System.out.println("non sensitive search");
+            searchPattern =
+                Pattern.compile(searchString, Pattern.CASE_INSENSITIVE);
+        }
     }
 
     /**
@@ -34,7 +49,8 @@ public class CSVTableFilter extends ViewerFilter {
         // loop on all column of the current row to find matches
         CSVRow row = (CSVRow) element;
         for (String s:row.getEntries()) {
-            if (s.matches(searchString)) {
+            Matcher m = searchPattern.matcher(s);
+            if (m.matches()) {
                 return true;
             }
         }

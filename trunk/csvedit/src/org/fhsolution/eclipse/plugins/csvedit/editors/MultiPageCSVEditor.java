@@ -134,7 +134,7 @@ implements IResourceChangeListener {
         // XXX move all the creation into its own component
         Canvas canvas = new Canvas(parent, SWT.None);
 
-        GridLayout layout = new GridLayout(5, false);
+        GridLayout layout = new GridLayout(7, false);
         canvas.setLayout(layout);
 
         // create the header part with the search function and Add/Delete rows
@@ -143,6 +143,10 @@ implements IResourceChangeListener {
         final Text searchText = new Text(canvas, SWT.BORDER | SWT.SEARCH);
         searchText.setLayoutData(
                 new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
+        Label sensitiveLabel = new Label(canvas, SWT.NONE);
+        sensitiveLabel.setText("case-sensitive");
+        final Button sensitiveBtn = new Button(canvas, SWT.CHECK);
+        sensitiveBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 
         // Create and configure the buttons
         Button insert = new Button(canvas, SWT.PUSH | SWT.CENTER);
@@ -159,6 +163,22 @@ implements IResourceChangeListener {
                     model.addLineAfterElement(row);
                     tableViewer.refresh();
                     tableModified();
+                }
+            }
+        });
+        insert.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                //if(((e.stateMask & SWT.CTRL) != 0) & (e.keyCode == 'd')) {
+                //if (e.stateMask == SWT.CTRL && e.keyCode == 'd') {
+                if (e.character == SWT.DEL) {
+                    System.out.println("DEL PRESSED");
+                    CSVRow row = (CSVRow) ((IStructuredSelection)
+                                tableViewer.getSelection()).getFirstElement();
+                    if (row != null) {
+                        model.addLineAfterElement(row);
+                        tableViewer.refresh();
+                        tableModified();
+                    }
                 }
             }
         });
@@ -194,6 +214,22 @@ implements IResourceChangeListener {
                 }
             }
         });
+        /*
+        insert.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.stateMask == SWT.CTRL && e.keyCode == 'd') {
+                    System.out.println("DEL pressed");
+                    CSVRow row = (CSVRow) ((IStructuredSelection)
+                            tableViewer.getSelection()).getFirstElement();
+                    if (row != null) {
+                        model.removeLine(row);
+                        tableViewer.refresh();
+                        tableModified();
+                    }
+                }
+            }
+        });
+        */
 
         tableViewer = new TableViewer(canvas,
                 SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION |SWT.BORDER);
@@ -213,7 +249,14 @@ implements IResourceChangeListener {
         // add the filtering and coloring when searching specific elements.
         searchText.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent ke) {
-                tableFilter.setSearchText(searchText.getText());
+                tableFilter.setSearchText(searchText.getText(), sensitiveBtn.getSelection());
+                labelProvider.setSearchText(searchText.getText());
+                tableViewer.refresh();
+            }
+        });
+        sensitiveBtn.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                tableFilter.setSearchText(searchText.getText(), sensitiveBtn.getSelection());
                 labelProvider.setSearchText(searchText.getText());
                 tableViewer.refresh();
             }
@@ -387,7 +430,7 @@ implements IResourceChangeListener {
         // Layout the viewer
         GridData gridData = new GridData();
         gridData.verticalAlignment = GridData.FILL;
-        gridData.horizontalSpan = 5;
+        gridData.horizontalSpan = 7;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
@@ -396,6 +439,11 @@ implements IResourceChangeListener {
         addPage(canvas);
         setPageText(indexTBL, "CSV Table");
     }
+
+    /*
+    private void filterTextForSearch() {
+    }
+    */
 
     /**
      * Set Name of the file to the tab

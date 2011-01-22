@@ -56,8 +56,8 @@ public class CSVPreferencePage extends FieldEditorPreferencePage implements
         addField(customDelimiterField);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     *
      *
      * @see
      * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
