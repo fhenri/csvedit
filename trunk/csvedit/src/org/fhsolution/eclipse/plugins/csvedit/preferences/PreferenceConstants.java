@@ -8,7 +8,7 @@ package org.fhsolution.eclipse.plugins.csvedit.preferences;
  */
 public class PreferenceConstants {
 
-	public static final String P_USEFIRSTLINEASHEADER = "booleanPreference";
-	public static final String P_CUSTOMDELIMITER = "stringPreference";
+	public static final String USE_FIRST_LINE_AS_HEADER = "booleanPreference";
+	public static final String CUSTOM_DELIMITER = "stringPreference";
 
 }

@@ -43,7 +43,7 @@ import org.fhsolution.eclipse.plugins.csvedit.filter.CSVTableFilter;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVFile;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 import org.fhsolution.eclipse.plugins.csvedit.model.ICsvFileModelListener;
-import org.fhsolution.eclipse.plugins.csvedit.model.PreferencesCsvOptionsProvider;
+import org.fhsolution.eclipse.plugins.csvedit.model.PreferencesCSVOptionsProvider;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVContentProvider;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVLabelProvider;
 import org.fhsolution.eclipse.plugins.csvedit.sorter.CSVTableSorter;
@@ -69,6 +69,8 @@ implements IResourceChangeListener {
     /** The table viewer used in page 1. */
     private TableViewer tableViewer;
 
+    /** use a preference page specific for each csv file. */
+
     private CSVTableSorter tableSorter;
     private CSVLabelProvider labelProvider;
 
@@ -86,13 +88,14 @@ implements IResourceChangeListener {
         }
     };
 
+    PreferencesCSVOptionsProvider pref = new PreferencesCSVOptionsProvider();
     /**
      * Creates a multi-page editor example.
      */
     public MultiPageCSVEditor () {
         super();
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
-        model = new CSVFile(new PreferencesCsvOptionsProvider());
+        model = new CSVFile(pref);
     }
 
     /**
@@ -134,7 +137,7 @@ implements IResourceChangeListener {
         // XXX move all the creation into its own component
         Canvas canvas = new Canvas(parent, SWT.None);
 
-        GridLayout layout = new GridLayout(7, false);
+        GridLayout layout = new GridLayout(5, false);
         canvas.setLayout(layout);
 
         // create the header part with the search function and Add/Delete rows
@@ -143,10 +146,6 @@ implements IResourceChangeListener {
         final Text searchText = new Text(canvas, SWT.BORDER | SWT.SEARCH);
         searchText.setLayoutData(
                 new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
-        Label sensitiveLabel = new Label(canvas, SWT.NONE);
-        sensitiveLabel.setText("case-sensitive");
-        final Button sensitiveBtn = new Button(canvas, SWT.CHECK);
-        sensitiveBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 
         // Create and configure the buttons
         Button insert = new Button(canvas, SWT.PUSH | SWT.CENTER);
@@ -230,6 +229,27 @@ implements IResourceChangeListener {
             }
         });
         */
+
+        // case sensitive search ?
+        Label sensitiveLabel = new Label(canvas, SWT.NONE);
+        sensitiveLabel.setText("case sensitive");
+        final Button sensitiveBtn = new Button(canvas, SWT.CHECK);
+        sensitiveBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
+
+        // manage 1st line - should only be visible if global option is set
+        if (pref.getUseFirstLineAsHeader()) {
+            Label encodingLineLabel = new Label(canvas, SWT.NONE);
+            encodingLineLabel.setText("Display 1st line");
+            final Button encodingLineBtn = new Button(canvas, SWT.CHECK);
+            encodingLineBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
+            encodingLineBtn.setSelection(true);
+            encodingLineBtn.addSelectionListener(new SelectionAdapter() {
+                public void widgetSelected(SelectionEvent e) {
+                    model.displayFirstLine(encodingLineBtn.getSelection());
+                    updateTableFromTextEditor();
+                }
+            });
+        }
 
         tableViewer = new TableViewer(canvas,
                 SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION |SWT.BORDER);
@@ -425,12 +445,10 @@ implements IResourceChangeListener {
         });
         */
 
-        tableHeaderMenu = new Menu(canvas);
-
         // Layout the viewer
         GridData gridData = new GridData();
         gridData.verticalAlignment = GridData.FILL;
-        gridData.horizontalSpan = 7;
+        gridData.horizontalSpan = 5;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
@@ -499,6 +517,7 @@ implements IResourceChangeListener {
         model.setInput(editor.getDocumentProvider().getDocument(
                 editor.getEditorInput()).get());
 
+        tableHeaderMenu = new Menu(tableViewer.getTable());
         // create columns
         for (int i = 0; i < model.getHeader().size(); i++) {
             final TableColumn column = new TableColumn(tableViewer.getTable(), SWT.LEFT);

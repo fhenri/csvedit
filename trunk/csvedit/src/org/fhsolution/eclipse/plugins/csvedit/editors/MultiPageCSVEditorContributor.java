@@ -40,12 +40,14 @@ public class MultiPageCSVEditorContributor extends MultiPageEditorActionBarContr
     }
 
     /**
+     *
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToMenu(org.eclipse.jface.action.IMenuManager)
      */
     public void contributeToMenu (IMenuManager manager) {
     }
 
     /**
+     *
      * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToToolBar(org.eclipse.jface.action.IToolBarManager)
      */
     public void contributeToToolBar (IToolBarManager manager) {

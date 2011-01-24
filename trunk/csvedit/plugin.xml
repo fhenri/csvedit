@@ -18,8 +18,8 @@
          point="org.eclipse.ui.preferencePages">
       <page
             name="CSV Editor Preferences"
-            class="org.fhsolution.eclipse.plugins.csvedit.CSVPreferencePage"
-            id="org.fhsolution.eclipse.plugins.csvedit.CSVPreferencePage">
+            class="org.fhsolution.eclipse.plugins.csvedit.preferences.CSVPreferencePage"
+            id="org.fhsolution.eclipse.plugins.csvedit.preferences.CSVPreferencePage">
       </page>
    </extension>
    <extension

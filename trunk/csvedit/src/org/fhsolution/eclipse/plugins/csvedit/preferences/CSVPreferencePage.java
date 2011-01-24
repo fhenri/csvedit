@@ -1,8 +1,10 @@
 package org.fhsolution.eclipse.plugins.csvedit.preferences;
 
-import org.eclipse.jface.preference.*;
-import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.fhsolution.eclipse.plugins.csvedit.Activator;
 
 /**
@@ -18,38 +20,34 @@ import org.fhsolution.eclipse.plugins.csvedit.Activator;
  * @author fhenri
  *
  */
-public class CSVPreferencePage extends FieldEditorPreferencePage implements
-        IWorkbenchPreferencePage {
+public class CSVPreferencePage extends FieldEditorPreferencePage
+implements IWorkbenchPreferencePage {
 
+    /**
+     * Public constructor
+     */
     public CSVPreferencePage() {
         super(GRID);
         setPreferenceStore(Activator.getDefault().getPreferenceStore());
-        setDescription("CSV Editor Preferences");
+        setDescription("Some options that will be use for all the csv files");
     }
 
     /**
      * Creates the field editors. Field editors are abstractions of the common
      * GUI blocks needed to manipulate various types of preferences. Each field
      * editor knows how to save and restore itself.
+     *
+     * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
      */
     public void createFieldEditors() {
-        /*
-         * addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH,
-         * "&Directory preference:", getFieldEditorParent()));
-         */
+
         addField(new BooleanFieldEditor(
-                PreferenceConstants.P_USEFIRSTLINEASHEADER,
+                PreferenceConstants.USE_FIRST_LINE_AS_HEADER,
                 "&Use the first line of the CSV file as the column headers",
                 getFieldEditorParent()));
 
-        /*
-         * addField(new RadioGroupFieldEditor( PreferenceConstants.P_CHOICE,
-         * "An example of a multiple-choice preference", 1, new String[][] { {
-         * "&Choice 1", "choice1" }, { "C&hoice 2", "choice2" } },
-         * getFieldEditorParent()));
-         */
         StringFieldEditor customDelimiterField = new StringFieldEditor(
-                PreferenceConstants.P_CUSTOMDELIMITER,
+                PreferenceConstants.CUSTOM_DELIMITER,
                 "Choose the delimiter to use:", 2, getFieldEditorParent());
         customDelimiterField.setTextLimit(1);
         customDelimiterField.setEmptyStringAllowed(false);
@@ -57,10 +55,17 @@ public class CSVPreferencePage extends FieldEditorPreferencePage implements
     }
 
     /**
+     * @see org.eclipse.jface.preference.FieldEditorPreferencePage#performOk()
+     */
+    public boolean performOk () {
+        // TODO here we should reload all opened csv file with the new pref.
+        return super.performOk();
+    }
+
+    /**
      *
      *
-     * @see
-     * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
     public void init(IWorkbench workbench) {
     }

@@ -17,13 +17,14 @@ import org.supercsv.prefs.CsvPreference;
 public class CSVFile {
 
     private int nbOfColumns = 1;
+    private boolean displayFirstLine = true;
     private ArrayList<CSVRow> rows = new ArrayList<CSVRow>();
     private ArrayList<String> header = new ArrayList<String>();
     private ArrayList<ICsvFileModelListener> listeners = new ArrayList<ICsvFileModelListener>();
 
-    private ICsvOptionsProvider optionsProvider;
+    private PreferencesCSVOptionsProvider optionsProvider;
 
-    public CSVFile(ICsvOptionsProvider provider) {
+    public CSVFile(PreferencesCSVOptionsProvider provider) {
         setCsvOptionsProvider(provider);
     }
 
@@ -31,11 +32,15 @@ public class CSVFile {
         readLines(text);
     }
 
-    public void setCsvOptionsProvider(ICsvOptionsProvider provider) {
+    public void displayFirstLine(boolean display) {
+        displayFirstLine = display;
+    }
+
+    public void setCsvOptionsProvider(PreferencesCSVOptionsProvider provider) {
         optionsProvider = provider;
     }
 
-    public ICsvOptionsProvider getCsvOptionsProvider() {
+    public PreferencesCSVOptionsProvider getCsvOptionsProvider() {
         return optionsProvider;
     }
 
@@ -51,6 +56,11 @@ public class CSVFile {
             StringReader sr = new StringReader(fileText);
             CsvListReader clr = new CsvListReader(sr,customCSVPreference);
             List<String> line = clr.read();
+
+            // should I read first line ?
+            if (!displayFirstLine) {
+                clr.read();
+            }
 
             while (line != null) {
 
