@@ -19,6 +19,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     public void initializeDefaultPreferences() {
         IPreferenceStore store = Activator.getDefault().getPreferenceStore();
         store.setDefault(PreferenceConstants.USE_FIRST_LINE_AS_HEADER, true);
+        store.setDefault(PreferenceConstants.CASE_SENSITIVE_SEARCH, false);
         store.setDefault(PreferenceConstants.CUSTOM_DELIMITER, ",");
     }
 

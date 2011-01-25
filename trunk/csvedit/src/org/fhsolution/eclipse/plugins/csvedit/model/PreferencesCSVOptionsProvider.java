@@ -11,6 +11,7 @@ import org.fhsolution.eclipse.plugins.csvedit.preferences.PreferenceConstants;
 public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
 
     private boolean useFirstLineAsHeader;
+    private boolean sensitiveSearch;
     private String customDelimiter;
 
     public PreferencesCSVOptionsProvider()
@@ -19,6 +20,8 @@ public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
             Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.USE_FIRST_LINE_AS_HEADER);
         customDelimiter =
             Activator.getDefault().getPreferenceStore().getString(PreferenceConstants.CUSTOM_DELIMITER);
+        sensitiveSearch =
+            Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CASE_SENSITIVE_SEARCH);
     }
 
     public String getCustomDelimiter() {
@@ -29,4 +32,7 @@ public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
         return useFirstLineAsHeader;
     }
 
+    public boolean getSensitiveSearch () {
+        return sensitiveSearch;
+    }
 }

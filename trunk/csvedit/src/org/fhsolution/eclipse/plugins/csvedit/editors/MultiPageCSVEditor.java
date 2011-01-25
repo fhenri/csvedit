@@ -229,7 +229,7 @@ implements IResourceChangeListener {
             }
         });
         */
-
+        /*
         // case sensitive search ?
         Label sensitiveLabel = new Label(canvas, SWT.NONE);
         sensitiveLabel.setText("case sensitive");
@@ -250,7 +250,14 @@ implements IResourceChangeListener {
                 }
             });
         }
-
+        sensitiveBtn.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                tableFilter.setSearchText(searchText.getText(), sensitiveBtn.getSelection());
+                labelProvider.setSearchText(searchText.getText());
+                tableViewer.refresh();
+            }
+        });
+        */
         tableViewer = new TableViewer(canvas,
                 SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION |SWT.BORDER);
         tableViewer.setUseHashlookup(true);
@@ -269,14 +276,7 @@ implements IResourceChangeListener {
         // add the filtering and coloring when searching specific elements.
         searchText.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent ke) {
-                tableFilter.setSearchText(searchText.getText(), sensitiveBtn.getSelection());
-                labelProvider.setSearchText(searchText.getText());
-                tableViewer.refresh();
-            }
-        });
-        sensitiveBtn.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                tableFilter.setSearchText(searchText.getText(), sensitiveBtn.getSelection());
+                tableFilter.setSearchText(searchText.getText(), pref.getSensitiveSearch());
                 labelProvider.setSearchText(searchText.getText());
                 tableViewer.refresh();
             }

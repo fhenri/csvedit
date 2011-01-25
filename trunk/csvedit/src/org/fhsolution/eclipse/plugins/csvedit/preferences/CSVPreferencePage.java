@@ -52,6 +52,12 @@ implements IWorkbenchPreferencePage {
         customDelimiterField.setTextLimit(1);
         customDelimiterField.setEmptyStringAllowed(false);
         addField(customDelimiterField);
+
+        addField(new BooleanFieldEditor(
+                PreferenceConstants.CASE_SENSITIVE_SEARCH,
+                "&make search case sensitive",
+                getFieldEditorParent()));
+
     }
 
     /**
