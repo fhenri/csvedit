@@ -31,7 +31,18 @@ public class CSVRow {
         }
     }
 
+    /**
+     * return the element at a given index.
+     * This method makes sure that if the current line does not have as many
+     * elements as the header, it will not break and return an empty string
+     *
+     * @param index
+     * @return
+     */
     public String getElementAt(int index) {
+        if (index >= entries.size()) {
+            return "";
+        }
         return entries.get(index);
     }
 
@@ -46,8 +57,8 @@ public class CSVRow {
     public String toString() {
         String result = "";
         for (String s:entries) {
-            // XXX use preferences here
-            result = result.concat(s).concat(",");
+            String delimiter = parent.getCsvOptionsProvider().getCustomDelimiter();
+            result = result.concat(s).concat(delimiter);
         }
         return result;
     }
