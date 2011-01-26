@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <description name="csvedit update site" url="http://csvedit.googlecode.com/svn/csvedit.update">
+      Update site for the csvedit eclipse plugin
+   </description>
    <feature url="features/csvedit.feature_1.0.1.jar" id="csvedit.feature" version="1.0.1"/>
 </site>
