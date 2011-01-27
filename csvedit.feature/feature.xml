@@ -3,7 +3,8 @@
       id="csvedit"
       label="csvedit"
       version="1.0.2"
-      provider-name="fhsolution">
+      provider-name="fhsolution"
+      plugin="org.fhsolution.eclipse.plugins.csvedit">
 
    <description url="http://code.google.com/p/csvedit/">
       This aims to create a CSV file editor in Eclipse with features such as :
@@ -40,7 +41,7 @@ permissions and limitations under the License.
          id="org.fhsolution.eclipse.plugins.csvedit"
          download-size="0"
          install-size="0"
-         version="1.0.2"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
