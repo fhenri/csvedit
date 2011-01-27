@@ -3,7 +3,7 @@
    <description name="csvedit update site" url="http://csvedit.googlecode.com/svn/csvedit.update">
       Update site for the csvedit eclipse plugin
    </description>
-   <feature url="features/csvedit_1.0.2.jar" id="csvedit" version="1.0.2">
+   <feature url="features/org.fhsolution.eclipse.feature.csvedit_1.0.2.jar" id="org.fhsolution.eclipse.feature.csvedit" version="1.0.2">
       <category name="Editor"/>
       <category name="CSV Editor"/>
    </feature>
