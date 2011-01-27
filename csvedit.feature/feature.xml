@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="csvedit.feature"
+      id="csvedit"
       label="csvedit"
       version="1.0.2"
       provider-name="fhsolution">
