@@ -142,7 +142,7 @@ implements IResourceChangeListener {
 
         // create the header part with the search function and Add/Delete rows
         Label searchLabel = new Label(canvas, SWT.NONE);
-        searchLabel.setText("Search: ");
+        searchLabel.setText("Filter: ");
         final Text searchText = new Text(canvas, SWT.BORDER | SWT.SEARCH);
         searchText.setLayoutData(
                 new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));

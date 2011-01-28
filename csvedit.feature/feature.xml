@@ -2,7 +2,7 @@
 <feature
       id="org.fhsolution.eclipse.feature.csvedit"
       label="csvedit"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="fhsolution"
       plugin="org.fhsolution.eclipse.plugins.csvedit">
 
