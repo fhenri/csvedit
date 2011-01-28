@@ -165,12 +165,12 @@ implements IResourceChangeListener {
                 }
             }
         });
+        /*
         insert.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 //if(((e.stateMask & SWT.CTRL) != 0) & (e.keyCode == 'd')) {
                 //if (e.stateMask == SWT.CTRL && e.keyCode == 'd') {
                 if (e.character == SWT.DEL) {
-                    System.out.println("DEL PRESSED");
                     CSVRow row = (CSVRow) ((IStructuredSelection)
                                 tableViewer.getSelection()).getFirstElement();
                     if (row != null) {
@@ -181,6 +181,7 @@ implements IResourceChangeListener {
                 }
             }
         });
+        */
 
         Button add = new Button(canvas, SWT.PUSH | SWT.CENTER);
         add.setText("Add Row");
@@ -217,7 +218,6 @@ implements IResourceChangeListener {
         insert.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.stateMask == SWT.CTRL && e.keyCode == 'd') {
-                    System.out.println("DEL pressed");
                     CSVRow row = (CSVRow) ((IStructuredSelection)
                             tableViewer.getSelection()).getFirstElement();
                     if (row != null) {
@@ -325,7 +325,6 @@ implements IResourceChangeListener {
                         if (e.character == SWT.CR) {
                             TableItem row = cursor.getRow();
                             row.setText(cursor.getColumn(), text.getText());
-                            System.out.println("call table modified");
                             tableModified();
                             text.dispose();
                         }
@@ -396,7 +395,6 @@ implements IResourceChangeListener {
                         // when the user hits "ENTER"
                         if (e.character == SWT.CR) {
                             TableItem row = cursor.getRow();
-                            System.out.println("on row " + row);
                             int column = cursor.getColumn();
                             row.setText(column, text.getText());
                             tableModified();

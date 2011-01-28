@@ -26,11 +26,9 @@ public class CSVTableFilter extends ViewerFilter {
         // Search must be a substring of the existing value
         this.searchString = ".*" + s + ".*";
         if (isCaseSensitive) {
-            System.out.println("case sensitive search");
             searchPattern =
                 Pattern.compile(searchString);
         } else {
-            System.out.println("non sensitive search");
             searchPattern =
                 Pattern.compile(searchString, Pattern.CASE_INSENSITIVE);
         }
@@ -54,7 +52,6 @@ public class CSVTableFilter extends ViewerFilter {
                 return true;
             }
         }
-
         return false;
     }
 }
