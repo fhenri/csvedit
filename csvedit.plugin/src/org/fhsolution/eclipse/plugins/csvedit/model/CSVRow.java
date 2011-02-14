@@ -1,6 +1,7 @@
 package org.fhsolution.eclipse.plugins.csvedit.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,22 +13,58 @@ import java.util.List;
  */
 public class CSVRow {
 
-    private ArrayList<String> entries = new ArrayList<String>();
-    private CSVFile parent;
+    /** Splitted line */
+    private final ArrayList<String> entries;
 
-    public CSVRow(List<String> line, CSVFile model) {
-        parent = model;
-        entries.addAll(line);
+    /** Row changes listener */
+    private final IRowChangesListener listener;
+
+    /**
+     * Constructor
+     * @param line
+     * @param listener
+     */
+    public CSVRow(List<String> line, IRowChangesListener listener) {
+        entries = new ArrayList<String>(line);
+        this.listener = listener;
     }
 
-    public ArrayList<String> getEntries() {
+    /**
+     * Constructor
+     * @param lineElements
+     * @param listener
+     */
+    public CSVRow(String[] lineElements, IRowChangesListener listener) {
+        this(Arrays.asList(lineElements), listener);
+    }
+
+    /**
+     * Create an empty row
+     * @param nbOfColumns
+     * @param delimiter
+     * @param listener
+     * @return
+     */
+    public static CSVRow createEmptyLine (int nbOfColumns, IRowChangesListener listener) {
+        List<String> line = new LinkedList<String>();
+        for (int i=0; i<nbOfColumns; i++) {
+            line.add("");
+        }
+        return new CSVRow(line, listener);
+    }
+
+    public ArrayList<String> getEntries () {
         return entries;
     }
 
-    public void setRowEntry(int elementIndex, String elementString) {
+    public String[] getEntriesAsArray () {
+        return entries.toArray(new String[entries.size()]);
+    }
+
+    public void setRowEntry (int elementIndex, String elementString) {
         if (entries.get(elementIndex).compareTo(elementString) != 0)  {
             entries.set(elementIndex, elementString);
-            parent.rowChanged(this, elementIndex);
+            listener.rowChanged(this, elementIndex);
         }
     }
 
@@ -37,9 +74,9 @@ public class CSVRow {
      * elements as the header, it will not break and return an empty string
      *
      * @param index
-     * @return
+     * @return the element at a given index
      */
-    public String getElementAt(int index) {
+    public String getElementAt (int index) {
         if (index >= entries.size()) {
             return "";
         }
@@ -48,19 +85,10 @@ public class CSVRow {
 
     /**
      * Return the number of elements in this row
-     * @return
+     * @return number of elements in this row
      */
     public int getNumberOfElements () {
         return entries.size();
-    }
-
-    public String toString() {
-        String result = "";
-        for (String s:entries) {
-            String delimiter = parent.getCsvOptionsProvider().getCustomDelimiter();
-            result = result.concat(s).concat(delimiter);
-        }
-        return result;
     }
 
     /**
@@ -70,12 +98,38 @@ public class CSVRow {
         entries.add(element);
     }
 
-    public static CSVRow createEmptyLine (int nbOfColumns, CSVFile model) {
-        List<String> line = new LinkedList<String>();
-        for (int i=0; i<nbOfColumns; i++) {
-            line.add("");
+    /**
+     * Remove an element of the row represented by its index
+     *
+     * @param index
+     */
+    public void removeElementAt (int index) {
+        entries.remove(index);
+    }
+
+    /**
+     * Give the String representation of a CSVRow object.
+     *
+     * @see java.lang.Object#toString()
+     */
+    public String toString () {
+        String result = "";
+        for (String s:entries) {
+            // FIXME get preferences here
+            result = result.concat(s).concat(",");
         }
-        return new CSVRow(line, model);
+        return result;
+    }
+
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((entries == null) ? 0 : entries.hashCode());
+        return result;
     }
 
     /**
@@ -83,6 +137,7 @@ public class CSVRow {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
+   @Override
     public boolean equals (Object anObject) {
         if (!(anObject instanceof CSVRow)) {
             return false;
@@ -96,4 +151,5 @@ public class CSVRow {
         }
         return true;
     }
+
 }

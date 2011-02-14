@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 
 /**
+ * Filter the elements given a pattern.
  *
  * @author fhenri
  *

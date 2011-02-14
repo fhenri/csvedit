@@ -13,4 +13,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- lib/SuperCSV-1.52.jar
+ lib/javacsv.jar
+Export-Package: org.fhsolution.eclipse.plugins.csvedit.editors,
+ org.fhsolution.eclipse.plugins.csvedit.model
+Bundle-Vendor: www.fhsolution.com
