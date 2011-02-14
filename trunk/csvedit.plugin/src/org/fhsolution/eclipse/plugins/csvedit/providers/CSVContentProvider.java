@@ -2,7 +2,7 @@ package org.fhsolution.eclipse.plugins.csvedit.providers;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.fhsolution.eclipse.plugins.csvedit.model.CSVFile;
+import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 
 /**
  *
@@ -12,12 +12,14 @@ import org.fhsolution.eclipse.plugins.csvedit.model.CSVFile;
 public class CSVContentProvider implements IStructuredContentProvider {
 
     /**
+     * Returns the elements to display in the table viewer
+     *
      * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
      */
     public Object[] getElements(Object element) {
 
-        if(element instanceof CSVFile) {
-            CSVFile model = (CSVFile) element;
+        if(element instanceof AbstractCSVFile) {
+        	AbstractCSVFile model = (AbstractCSVFile) element;
             return model.getArrayRows();
         }
         return null;

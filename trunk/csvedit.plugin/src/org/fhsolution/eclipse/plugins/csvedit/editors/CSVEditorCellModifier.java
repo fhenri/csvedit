@@ -12,6 +12,9 @@ import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 public class CSVEditorCellModifier implements ICellModifier {
 
     /**
+     * Checks whether the given property of the given element can be modified.
+     *
+     * @return true if the property can be modified, and false if it is not modifiable
      * @see org.eclipse.jface.viewers.ICellModifier#canModify(java.lang.Object, java.lang.String)
      */
     public boolean canModify (Object element, String property) {
@@ -19,6 +22,9 @@ public class CSVEditorCellModifier implements ICellModifier {
     }
 
     /**
+     * Returns the value for the given property of the given element.
+     * Returns "" if the element does not have the given property.
+     *
      * @see org.eclipse.jface.viewers.ICellModifier#getValue(java.lang.Object, java.lang.String)
      */
     public Object getValue (Object element, String property) {
@@ -34,6 +40,10 @@ public class CSVEditorCellModifier implements ICellModifier {
     }
 
     /**
+     * Modifies the value for the given property of the given element.
+     * Has no effect if the element does not have the given property,
+     * or if the property cannot be modified.
+     *
      * @see org.eclipse.jface.viewers.ICellModifier#modify(java.lang.Object, java.lang.String, java.lang.Object)
      */
     public void modify (Object element, String property, Object value) {

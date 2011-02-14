@@ -40,10 +40,9 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.fhsolution.eclipse.plugins.csvedit.filter.CSVTableFilter;
-import org.fhsolution.eclipse.plugins.csvedit.model.CSVFile;
+import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 import org.fhsolution.eclipse.plugins.csvedit.model.ICsvFileModelListener;
-import org.fhsolution.eclipse.plugins.csvedit.model.PreferencesCSVOptionsProvider;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVContentProvider;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVLabelProvider;
 import org.fhsolution.eclipse.plugins.csvedit.sorter.CSVTableSorter;
@@ -53,7 +52,7 @@ import org.fhsolution.eclipse.plugins.csvedit.sorter.CSVTableSorter;
  * @author fhenri
  *
  */
-public class MultiPageCSVEditor extends MultiPageEditorPart
+public abstract class MultiPageCSVEditor extends MultiPageEditorPart
 implements IResourceChangeListener {
 
     private boolean isPageModified;
@@ -76,27 +75,35 @@ implements IResourceChangeListener {
 
     private Menu tableHeaderMenu;
 
-    private CSVFile model;
+    private AbstractCSVFile model;
 
     /**
      *
      */
     private final ICsvFileModelListener csvFileListener = new ICsvFileModelListener() {
         public void entryChanged(CSVRow row, int rowIndex) {
-            tableViewer.update(row, new String[] { Integer.toString(rowIndex) });
+            //tableViewer.update(row, new String[] { Integer.toString(rowIndex) });
+            tableViewer.refresh();
             tableModified();
         }
     };
 
-    PreferencesCSVOptionsProvider pref = new PreferencesCSVOptionsProvider();
     /**
      * Creates a multi-page editor example.
      */
     public MultiPageCSVEditor () {
         super();
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
-        model = new CSVFile(pref);
+        model = createCSVFile();
     }
+
+    /**
+     * Create the CSV file object
+     * @return and {@link AbstractCSVFile} object which provides the contents
+     * as well as some formatting information such as the delimiter and
+     * extra metainformation
+     */
+    protected abstract AbstractCSVFile createCSVFile();
 
     /**
      * Creates the pages of the multi-page editor.
@@ -276,7 +283,7 @@ implements IResourceChangeListener {
         // add the filtering and coloring when searching specific elements.
         searchText.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent ke) {
-                tableFilter.setSearchText(searchText.getText(), pref.getSensitiveSearch());
+                tableFilter.setSearchText(searchText.getText(), model.getSensitiveSearch());
                 labelProvider.setSearchText(searchText.getText());
                 tableViewer.refresh();
             }
@@ -504,6 +511,7 @@ implements IResourceChangeListener {
      *
      */
     private void updateTableFromTextEditor () {
+        // TODO Improve performance in this method
 
         for (TableColumn column : tableViewer.getTable().getColumns()) {
             column.dispose();
@@ -532,7 +540,7 @@ implements IResourceChangeListener {
             itemName.addListener(SWT.Selection, new Listener() {
                 public void handleEvent(Event event) {
                     if (itemName.getSelection()) {
-                        column.setWidth(150);
+                        column.setWidth(100);
                         column.setResizable(true);
                     } else {
                         column.setWidth(0);
@@ -560,6 +568,25 @@ implements IResourceChangeListener {
             });
         }
 
+        /*
+        final MenuItem itemSeparator = new MenuItem(tableHeaderMenu, SWT.SEPARATOR);
+        // create menu item to delete column
+        // FIXME only if the preferences is set to read header
+        final MenuItem itemName = new MenuItem(tableHeaderMenu, SWT.PUSH);
+        itemName.setText("Delete Column");
+        itemName.setSelection(false);
+        itemName.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                // delete current column
+                int colIndex = 1;
+                System.out.println("remove column " + colIndex);
+                model.removeColumn(colIndex);
+                isPageModified = true;
+                tableViewer.refresh();
+            }
+        });
+        */
+
         tableViewer.setInput(model);
         model.addModelListener(csvFileListener);
 
@@ -580,6 +607,7 @@ implements IResourceChangeListener {
         tableViewer.setColumnProperties(columnProperties);
         tableViewer.setCellEditors(cellEditors);
         tableViewer.setCellModifier(new CSVEditorCellModifier());
+
     }
 
     /**
@@ -698,15 +726,15 @@ implements IResourceChangeListener {
      */
     protected void pageChange (int newPageIndex) {
         switch (newPageIndex) {
-           case indexSRC :
-              if (isDirty())
-                 updateTableFromTextEditor();
-              break;
-           case indexTBL :
-              if (isPageModified)
-                 updateTextEditorFromTable();
-              break;
-        }
+            case indexSRC :
+                if (isDirty())
+                    updateTextEditorFromTable();
+                break;
+            case indexTBL :
+                if (isPageModified)
+                    updateTableFromTextEditor();
+                break;
+            }
         isPageModified = false;
         super.pageChange(newPageIndex);
      }
@@ -718,7 +746,7 @@ implements IResourceChangeListener {
         editor
            .getDocumentProvider()
            .getDocument(editor.getEditorInput())
-           .set(((CSVFile) tableViewer.getInput()).getTextRepresentation());
+           .set(((AbstractCSVFile) tableViewer.getInput()).getTextRepresentation());
      }
 
     /**
