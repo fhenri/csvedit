@@ -40,6 +40,20 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      * @return true if the search must be case sensitive.
      */
     public abstract boolean getSensitiveSearch();
+    
+    /**
+     * Get custom delimiter to use as a separator
+     * @return the delimiter
+     */
+    public abstract char getCustomDelimiter();
+    
+    /**
+     * Get the character that defines comment lines
+     * @return the comment line starting character. If no comments are allowed in this
+     * file, then Character.UNASSIGNED constant must be returned;
+     * 
+     */
+    public abstract char getCommentChar();
 
     public void setInput(String text) {
         readLines(text);
@@ -49,14 +63,26 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         displayFirstLine = display;
     }
 
-    protected abstract CsvReader initializeReader (Reader reader);
+    protected CsvReader initializeReader (Reader reader)
+    {
+        CsvReader csvReader = new CsvReader(reader);
+
+        char customDelimiter = getCustomDelimiter();
+        csvReader.setDelimiter(customDelimiter);
+        
+        char commentChar = getCommentChar();
+        if (commentChar != Character.UNASSIGNED) {
+            csvReader.setComment(commentChar);
+            csvReader.setUseComments(true);
+        }
+        return csvReader;
+    }
 
     protected void readLines(String fileText) {
         rows.clear();
 
         try {
             CsvReader csvReader = initializeReader(new StringReader(fileText));
-
             // case when the first line is the encoding
             if (!displayFirstLine) {
                 csvReader.skipLine();
@@ -212,7 +238,17 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
             listeners.add(csvFileListener);
     }
 
-    protected abstract CsvWriter initializeWriter (Writer writer);
+    /**
+     * Initialize the CsvWriter
+     * @param writer
+     * @return
+     */
+    protected CsvWriter initializeWriter (Writer writer)
+    {
+    	char delimiter = getCustomDelimiter();
+    	CsvWriter csvWriter = new CsvWriter(writer, delimiter);
+        return csvWriter;
+    }
 
     public String getTextRepresentation() {
 

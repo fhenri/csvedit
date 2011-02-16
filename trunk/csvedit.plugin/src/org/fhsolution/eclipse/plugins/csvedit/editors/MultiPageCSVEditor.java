@@ -39,6 +39,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.fhsolution.eclipse.plugins.csvedit.editors.text.CSVTextEditor;
 import org.fhsolution.eclipse.plugins.csvedit.filter.CSVTableFilter;
 import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
@@ -127,7 +128,7 @@ implements IResourceChangeListener {
      */
     private void createSourcePage () {
         try {
-            editor = new TextEditor();
+            editor = new CSVTextEditor(model.getCustomDelimiter());
             addPage(editor, getEditorInput());
             setPageText(indexSRC, "CSV Source");
         } catch (PartInitException e) {
