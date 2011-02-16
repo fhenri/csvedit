@@ -1,3 +1,17 @@
+/* Copyright 2011 csvedit
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.fhsolution.eclipse.plugins.csvedit.model;
 
 import java.io.Reader;
@@ -40,18 +54,18 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      * @return true if the search must be case sensitive.
      */
     public abstract boolean getSensitiveSearch();
-    
+
     /**
      * Get custom delimiter to use as a separator
      * @return the delimiter
      */
     public abstract char getCustomDelimiter();
-    
+
     /**
      * Get the character that defines comment lines
      * @return the comment line starting character. If no comments are allowed in this
      * file, then Character.UNASSIGNED constant must be returned;
-     * 
+     *
      */
     public abstract char getCommentChar();
 
@@ -69,7 +83,7 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
 
         char customDelimiter = getCustomDelimiter();
         csvReader.setDelimiter(customDelimiter);
-        
+
         char commentChar = getCommentChar();
         if (commentChar != Character.UNASSIGNED) {
             csvReader.setComment(commentChar);
@@ -245,8 +259,8 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      */
     protected CsvWriter initializeWriter (Writer writer)
     {
-    	char delimiter = getCustomDelimiter();
-    	CsvWriter csvWriter = new CsvWriter(writer, delimiter);
+        char delimiter = getCustomDelimiter();
+        CsvWriter csvWriter = new CsvWriter(writer, delimiter);
         return csvWriter;
     }
 
