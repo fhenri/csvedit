@@ -54,7 +54,7 @@ public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
         return sensitiveSearch;
     }
 
-    public String getCommenChar() {
+    public String getCommentChar() {
         return commentChar;
     }
 }

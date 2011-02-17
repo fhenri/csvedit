@@ -15,6 +15,7 @@
 package org.fhsolution.eclipse.plugins.csvedit.customeditor.model;
 
 import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
+import org.fhsolution.eclipse.plugins.csvedit.model.ICsvOptionsProvider;
 
 /**
  *
@@ -26,13 +27,13 @@ import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 public class DefaultCSVFile extends AbstractCSVFile {
 
     /** Preferences provider */
-    private final PreferencesCSVOptionsProvider optionsProvider;
+    private final ICsvOptionsProvider optionsProvider;
 
     /**
      * Constructor
      * @param provider the {@link PreferencesCSVOptionsProvider}
      */
-    public DefaultCSVFile(PreferencesCSVOptionsProvider provider) {
+    public DefaultCSVFile(ICsvOptionsProvider provider) {
         super();
         this.optionsProvider = provider;
     }
@@ -54,7 +55,7 @@ public class DefaultCSVFile extends AbstractCSVFile {
 
     @Override
     public char getCommentChar() {
-        String commentChar = optionsProvider.getCommenChar();
+        String commentChar = optionsProvider.getCommentChar();
         char result = Character.UNASSIGNED;
         if (commentChar != null && commentChar != "") {
            result = commentChar.charAt(0);
