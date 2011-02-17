@@ -106,8 +106,6 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
                 csvReader.readHeaders();
                 String[] rowValues = csvReader.getHeaders();
                 populateHeaders(rowValues);
-            } else {
-                populateHeaders(null);
             }
 
             while (csvReader.readRecord()) {
@@ -117,6 +115,10 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
                 if (rowValues.length > nbOfColumns) {
                     nbOfColumns = rowValues.length;
                 }
+            }
+
+            if (!isFirstLineHeader()) {
+                populateHeaders(null);
             }
 
             csvReader.close();
@@ -211,7 +213,7 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     }
 
     public String[] getArrayHeader () {
-        return (String[]) header.toArray();
+        return header.toArray(new String[header.size()]);
     }
 
     public int getColumnCount() {
@@ -235,12 +237,23 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      */
     public void removeColumn (int colIndex) {
         if (isFirstLineHeader()) {
-            System.out.println("remove header element");
             header.remove(colIndex);
+            nbOfColumns--;
         }
         for (CSVRow row : rows) {
             row.removeElementAt(colIndex);
         }
+    }
+
+    /**
+     * Remove the column represented by its name
+     *
+     * @param colIndex
+     */
+    public void removeColumn (String columnName) {
+        if (columnName == null) return;
+        int colIndex = header.indexOf(columnName);
+        removeColumn(colIndex);
     }
 
     public void removeModelListener(ICsvFileModelListener csvFileListener) {

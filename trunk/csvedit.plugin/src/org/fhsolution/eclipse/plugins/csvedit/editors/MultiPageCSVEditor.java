@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -58,6 +59,8 @@ import org.fhsolution.eclipse.plugins.csvedit.filter.CSVTableFilter;
 import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 import org.fhsolution.eclipse.plugins.csvedit.model.ICsvFileModelListener;
+import org.fhsolution.eclipse.plugins.csvedit.model.ICsvOptionsProvider;
+import org.fhsolution.eclipse.plugins.csvedit.page.DeleteColumnPage;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVContentProvider;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVLabelProvider;
 import org.fhsolution.eclipse.plugins.csvedit.sorter.CSVTableSorter;
@@ -83,14 +86,14 @@ implements IResourceChangeListener {
     /** The table viewer used in page 1. */
     private TableViewer tableViewer;
 
-    /** use a preference page specific for each csv file. */
-
     private CSVTableSorter tableSorter;
     private CSVLabelProvider labelProvider;
 
     private Menu tableHeaderMenu;
 
     private AbstractCSVFile model;
+
+    protected ICsvOptionsProvider preferences;
 
     /**
      *
@@ -573,7 +576,6 @@ implements IResourceChangeListener {
                     if (tableViewer.getTable().getSortColumn() == column) {
                         dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
                     } else {
-
                         dir = SWT.DOWN;
                     }
                     tableViewer.getTable().setSortDirection(dir);
@@ -583,24 +585,32 @@ implements IResourceChangeListener {
             });
         }
 
-        /*
-        final MenuItem itemSeparator = new MenuItem(tableHeaderMenu, SWT.SEPARATOR);
-        // create menu item to delete column
-        // FIXME only if the preferences is set to read header
-        final MenuItem itemName = new MenuItem(tableHeaderMenu, SWT.PUSH);
-        itemName.setText("Delete Column");
-        itemName.setSelection(false);
-        itemName.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                // delete current column
-                int colIndex = 1;
-                System.out.println("remove column " + colIndex);
-                model.removeColumn(colIndex);
-                isPageModified = true;
-                tableViewer.refresh();
-            }
-        });
-        */
+        if (preferences.getUseFirstLineAsHeader()) {
+            new MenuItem(tableHeaderMenu, SWT.SEPARATOR);
+
+            // create menu item to delete column
+            final MenuItem itemName = new MenuItem(tableHeaderMenu, SWT.PUSH);
+            itemName.setText("Delete Column");
+            itemName.setSelection(false);
+            itemName.addListener(SWT.Selection, new Listener() {
+                public void handleEvent(Event event) {
+                    // call delete current column page
+                    DeleteColumnPage dcPage =
+                        new DeleteColumnPage(getSite().getShell(), model.getArrayHeader());
+                    if (dcPage.open() == InputDialog.OK) {
+                        String[] colToDelete = dcPage.getColumnSelected();
+                        for (String column : colToDelete) {
+                            int colIndex = findColumnForName(column);
+                            tableViewer.getTable().getColumn(colIndex).dispose();
+                            model.removeColumn(column);
+                        }
+                        isPageModified = true;
+                        tableViewer.refresh();
+                    }
+                }
+            });
+            // XXX create an insert page too to insert column in the model
+        }
 
         tableViewer.setInput(model);
         model.addModelListener(csvFileListener);
@@ -620,10 +630,28 @@ implements IResourceChangeListener {
         }
 
         tableViewer.setColumnProperties(columnProperties);
+
         // XXX can be replaced by tableViewer.setEditingSupport()
         tableViewer.setCellEditors(cellEditors);
         tableViewer.setCellModifier(new CSVEditorCellModifier());
 
+    }
+
+    /**
+     * Find a column in the Table by its name
+     *
+     * @param columnName
+     * @return the index of the Column indicated by its name
+     */
+    private int findColumnForName (String columnName) {
+        int index = -1;
+        TableColumn[] tableColumns = tableViewer.getTable().getColumns();
+        for (int i = 0; i < tableColumns.length; i++) {
+            TableColumn column = tableColumns[i];
+            if (columnName.equalsIgnoreCase(column.getText()))
+                return i;
+        }
+        return index;
     }
 
     /**

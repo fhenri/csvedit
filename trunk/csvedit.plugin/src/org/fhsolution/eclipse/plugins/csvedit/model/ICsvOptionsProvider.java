@@ -23,6 +23,9 @@ public interface ICsvOptionsProvider {
 
     boolean getUseFirstLineAsHeader();
 
+    boolean getSensitiveSearch();
+
     String getCustomDelimiter();
 
+    String getCommentChar();
 }
