@@ -106,12 +106,13 @@ public class CSVTokenScanner implements ITokenScanner {
                 boolean scan = true;
                 while (scan) {
                     // check if we are at the end of the line
-                    if (m_currentOffset == lineMaxOffset) {
+                    if (m_currentOffset >= lineMaxOffset) {
                         CSVTokenType type = ((m_currentColumn % 2) == 0) ? CSVTokenType.ODD_COLUMN : CSVTokenType.EVEN_COLUMN;
                         result = new CSVToken(type, m_currentColumn);
 
                         m_tokenOffset = startOffset;
                         m_tokenLength = length;
+                        m_currentColumn= 0;
                         //System.out.println("Token found [" + m_document.get(m_tokenOffset, m_tokenLength) + "]");
                         scan = false;
                     }
