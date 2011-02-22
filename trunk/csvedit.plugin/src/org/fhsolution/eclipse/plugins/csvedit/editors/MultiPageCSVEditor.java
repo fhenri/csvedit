@@ -61,6 +61,7 @@ import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 import org.fhsolution.eclipse.plugins.csvedit.model.ICsvFileModelListener;
 import org.fhsolution.eclipse.plugins.csvedit.model.ICsvOptionsProvider;
 import org.fhsolution.eclipse.plugins.csvedit.page.DeleteColumnPage;
+import org.fhsolution.eclipse.plugins.csvedit.page.InsertColumnPage;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVContentProvider;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVLabelProvider;
 import org.fhsolution.eclipse.plugins.csvedit.sorter.CSVTableSorter;
@@ -184,7 +185,7 @@ implements IResourceChangeListener {
                 CSVRow row = (CSVRow) ((IStructuredSelection)
                         tableViewer.getSelection()).getFirstElement();
                 if (row != null) {
-                    model.addLineAfterElement(row);
+                    model.addRowAfterElement(row);
                     tableViewer.refresh();
                     tableModified();
                 }
@@ -216,7 +217,7 @@ implements IResourceChangeListener {
         add.setLayoutData(buttonAddGridData);
         add.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                model.addLine();
+                model.addRow();
                 tableViewer.refresh();
                 tableModified();
             }
@@ -233,7 +234,7 @@ implements IResourceChangeListener {
                 CSVRow row = (CSVRow) ((IStructuredSelection)
                         tableViewer.getSelection()).getFirstElement();
                 if (row != null) {
-                    model.removeLine(row);
+                    model.removeRow(row);
                     tableViewer.refresh();
                     tableModified();
                 }
@@ -589,10 +590,10 @@ implements IResourceChangeListener {
             new MenuItem(tableHeaderMenu, SWT.SEPARATOR);
 
             // create menu item to delete column
-            final MenuItem itemName = new MenuItem(tableHeaderMenu, SWT.PUSH);
-            itemName.setText("Delete Column");
-            itemName.setSelection(false);
-            itemName.addListener(SWT.Selection, new Listener() {
+            final MenuItem deleteColumnItem = new MenuItem(tableHeaderMenu, SWT.PUSH);
+            deleteColumnItem.setText("Delete Column");
+            deleteColumnItem.setSelection(false);
+            deleteColumnItem.addListener(SWT.Selection, new Listener() {
                 public void handleEvent(Event event) {
                     // call delete current column page
                     DeleteColumnPage dcPage =
@@ -609,7 +610,24 @@ implements IResourceChangeListener {
                     }
                 }
             });
-            // XXX create an insert page too to insert column in the model
+
+            // create menu item to insert column
+            final MenuItem insertColumnItem = new MenuItem(tableHeaderMenu, SWT.PUSH);
+            insertColumnItem.setText("Add Column");
+            insertColumnItem.setSelection(false);
+            insertColumnItem.addListener(SWT.Selection, new Listener() {
+                public void handleEvent(Event event) {
+                    // call delete current column page
+                    InsertColumnPage dcPage =
+                        new InsertColumnPage(getSite().getShell(), model.getArrayHeader());
+                    if (dcPage.open() == InputDialog.OK) {
+                        String colToInsert = dcPage.getColumnNewName();
+                        model.addColumn(colToInsert);
+                        isPageModified = true;
+                        tableViewer.refresh();
+                    }
+                }
+            });
         }
 
         tableViewer.setInput(model);

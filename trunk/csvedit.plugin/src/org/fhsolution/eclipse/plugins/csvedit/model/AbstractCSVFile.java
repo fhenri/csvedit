@@ -24,6 +24,11 @@ import java.util.List;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
+/**
+ *
+ * @author fhenri
+ *
+ */
 public abstract class AbstractCSVFile implements IRowChangesListener {
 
     private int nbOfColumns;
@@ -69,14 +74,24 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      */
     public abstract char getCommentChar();
 
+    /**
+     * @param text
+     */
     public void setInput(String text) {
         readLines(text);
     }
 
+    /**
+     * @param display
+     */
     public void displayFirstLine(boolean display) {
         displayFirstLine = display;
     }
 
+    /**
+     * @param reader
+     * @return
+     */
     protected CsvReader initializeReader (Reader reader)
     {
         CsvReader csvReader = new CsvReader(reader);
@@ -92,6 +107,9 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         return csvReader;
     }
 
+    /**
+     * @param fileText
+     */
     protected void readLines(String fileText) {
         rows.clear();
 
@@ -128,68 +146,13 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         }
     }
 
-    /**
-     *
-     */
-    public void addLine () {
-        CSVRow row = CSVRow.createEmptyLine(nbOfColumns, this);
-        addLine(row);
-    }
+    // ----------------------------------
+    // Helper method on header management
+    // ----------------------------------
 
     /**
-     * @param row
+     * @param entries
      */
-    public void addLineAfterElement (CSVRow row) {
-        CSVRow newRow = CSVRow.createEmptyLine(nbOfColumns,  this);
-        int indexRow = findRow(row);
-        if (indexRow != -1) {
-            rows.add(indexRow, newRow);
-        }
-        else {
-            addLine(row);
-        }
-    }
-
-    /**
-     * @param row
-     */
-    public void addLine (CSVRow row) {
-        rows.add(row);
-    }
-
-    /**
-     * @param row
-     * @return
-     */
-    public int findRow (CSVRow findRow) {
-        for (int i = 0; i < getArrayRows().length; i++) {
-            CSVRow row = getRowAt(i);
-            if (row.equals(findRow)) return i;
-        }
-        return -1;
-    }
-
-    /**
-     *
-     */
-    public void removeLine (CSVRow row) {
-        if (!rows.remove(row)) {
-            // TODO return error message
-        }
-    }
-
-    public Object[] getArrayRows() {
-        return rows.toArray();
-    }
-
-    public List<CSVRow> getRows() {
-        return rows;
-    }
-
-    public CSVRow getRowAt (int index) {
-        return rows.get(index);
-    }
-
     private void populateHeaders (String[] entries) {
         header.clear();
 
@@ -208,26 +171,134 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         }
     }
 
+    /**
+     * @return
+     */
     public ArrayList<String> getHeader() {
         return header;
     }
 
+    /**
+     * @return
+     */
     public String[] getArrayHeader () {
         return header.toArray(new String[header.size()]);
     }
 
-    public int getColumnCount() {
-        return nbOfColumns;
+    // ----------------------------------
+    // Helper method on rows management
+    // ----------------------------------
+
+    /**
+     *
+     */
+    public void addRow () {
+        CSVRow row = CSVRow.createEmptyLine(nbOfColumns, this);
+        addRow(row);
     }
 
+    /**
+     * @param row
+     */
+    public void addRow (CSVRow row) {
+        rows.add(row);
+    }
+
+    /**
+     * @param row
+     */
+    public void addRowAfterElement (CSVRow row) {
+        CSVRow newRow = CSVRow.createEmptyLine(nbOfColumns,  this);
+        int indexRow = findRow(row);
+        if (indexRow != -1) {
+            rows.add(indexRow, newRow);
+        }
+        else {
+            addRow(row);
+        }
+    }
+
+    /**
+     * @param row
+     * @return
+     */
+    public int findRow (CSVRow findRow) {
+        for (int i = 0; i < getArrayRows().length; i++) {
+            CSVRow row = getRowAt(i);
+            if (row.equals(findRow)) return i;
+        }
+        return -1;
+    }
+
+
+    /**
+     * @return
+     */
+    public List<CSVRow> getRows() {
+        return rows;
+    }
+
+    /**
+     * @return
+     */
+    public Object[] getArrayRows() {
+        return rows.toArray();
+    }
+
+    /**
+     * @param index
+     * @return
+     */
+    public CSVRow getRowAt (int index) {
+        return rows.get(index);
+    }
+
+    /**
+     * @see org.fhsolution.eclipse.plugins.csvedit.model.IRowChangesListener#rowChanged(org.fhsolution.eclipse.plugins.csvedit.model.CSVRow, int)
+     */
     public void rowChanged (CSVRow row, int rowIndex) {
         for (ICsvFileModelListener l : listeners) {
             ((ICsvFileModelListener) l).entryChanged(row, rowIndex);
         }
     }
 
+    /**
+     * @param rowIndex
+     */
     public void removeRow (int rowIndex) {
         rows.remove(rowIndex);
+    }
+
+    /**
+     *
+     */
+    public void removeRow (CSVRow row) {
+        if (!rows.remove(row)) {
+            // TODO return error message
+        }
+    }
+
+
+    // ----------------------------------
+    // Helper method on column management
+    // ----------------------------------
+
+    /**
+     * @param colName
+     */
+    public void addColumn (String colName) {
+        nbOfColumns++;
+        header.add(colName);
+        for (CSVRow row : rows) {
+            row.addElement("");
+        }
+    }
+
+    /**
+     * @return
+     */
+    public int getColumnCount() {
+        return nbOfColumns;
     }
 
     /**
@@ -256,11 +327,17 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         removeColumn(colIndex);
     }
 
-    public void removeModelListener(ICsvFileModelListener csvFileListener) {
+    /**
+     * @param csvFileListener
+     */
+    public void removeModelListener (ICsvFileModelListener csvFileListener) {
         listeners.remove(csvFileListener);
     }
 
-    public void addModelListener(ICsvFileModelListener csvFileListener) {
+    /**
+     * @param csvFileListener
+     */
+    public void addModelListener (ICsvFileModelListener csvFileListener) {
         if (!listeners.contains(csvFileListener))
             listeners.add(csvFileListener);
     }
@@ -277,7 +354,10 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         return csvWriter;
     }
 
-    public String getTextRepresentation() {
+    /**
+     * @return
+     */
+    public String getTextRepresentation () {
 
         StringWriter sw = new StringWriter();
         try {
@@ -304,5 +384,4 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         return sw.toString();
 
     }
-
 }

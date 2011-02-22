@@ -67,14 +67,24 @@ public class CSVRow {
         return new CSVRow(line, listener);
     }
 
+    /**
+     * @return
+     */
     public ArrayList<String> getEntries () {
         return entries;
     }
 
+    /**
+     * @return
+     */
     public String[] getEntriesAsArray () {
         return entries.toArray(new String[entries.size()]);
     }
 
+    /**
+     * @param elementIndex
+     * @param elementString
+     */
     public void setRowEntry (int elementIndex, String elementString) {
         if (entries.get(elementIndex).compareTo(elementString) != 0)  {
             entries.set(elementIndex, elementString);

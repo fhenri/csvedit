@@ -15,44 +15,45 @@
 package org.fhsolution.eclipse.plugins.csvedit.page;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 /**
  *
  * @author fhenri
  *
  */
-public class DeleteColumnPage extends Dialog {
+public class InsertColumnPage extends Dialog {
 
     private String[] columnTitle;
+    private String newColumnName;
     private ArrayList<String> selectedColumn;
 
     /**
      * @param parentShell
      * @param columns
      */
-    public DeleteColumnPage (
+    public InsertColumnPage (
             Shell parentShell,
             String[] columns) {
         super(parentShell);
         this.columnTitle = columns;
+        this.newColumnName = "";
         this.selectedColumn = new ArrayList<String>(columnTitle.length);
     }
 
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
      */
     protected Control createDialogArea (Composite parent) {
@@ -60,11 +61,7 @@ public class DeleteColumnPage extends Dialog {
         final GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 2;
         container.setLayout(gridLayout);
-        final Label filterLabel = new Label(container, SWT.NONE);
-        filterLabel.setLayoutData(new GridData(GridData.BEGINNING,
-                GridData.BEGINNING, false, false, 2, 1));
-        filterLabel.setText("Select the column that you want to delete:");
-
+        /*
         final Label nameLabel = new Label(container, SWT.NONE);
         nameLabel.setLayoutData(new GridData(GridData.END,
                 GridData.CENTER, false, false));
@@ -80,8 +77,28 @@ public class DeleteColumnPage extends Dialog {
                         selectedColumn.clear();
                         selectedColumn.addAll(Arrays.asList(columnList.getSelection()));
                     }});
+        */
+        final Label filterLabel = new Label(container, SWT.NONE);
+        filterLabel.setLayoutData(new GridData(GridData.BEGINNING,
+                GridData.BEGINNING, false, false, 2, 1));
+        filterLabel.setText("Please Give the name of the new column to be created");
+
+        final Text newColumnNameField = new Text(container, SWT.BORDER);
+        newColumnNameField.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false));
+        newColumnNameField.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                newColumnName = newColumnNameField.getText();
+            }
+        });
 
         return container;
+    }
+
+    /**
+     * @return
+     */
+    public String getColumnNewName () {
+        return newColumnName;
     }
 
     /**
@@ -91,11 +108,11 @@ public class DeleteColumnPage extends Dialog {
         return selectedColumn.toArray(new String[selectedColumn.size()]);
     }
 
-    /**
+    /* (non-Javadoc)
      * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
      */
     protected void configureShell (Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Delete Column");
+        newShell.setText("Insert Column");
     }
 }
