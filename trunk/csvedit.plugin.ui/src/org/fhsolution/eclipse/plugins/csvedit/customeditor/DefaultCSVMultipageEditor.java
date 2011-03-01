@@ -26,7 +26,7 @@ public class DefaultCSVMultipageEditor extends MultiPageCSVEditor {
      */
     protected AbstractCSVFile createCSVFile()
     {
-        preferences = new PreferencesCSVOptionsProvider();
+        PreferencesCSVOptionsProvider preferences = new PreferencesCSVOptionsProvider();
         return new DefaultCSVFile(preferences);
     }
 
