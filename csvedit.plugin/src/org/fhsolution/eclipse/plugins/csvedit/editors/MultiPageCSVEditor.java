@@ -586,7 +586,7 @@ implements IResourceChangeListener {
             });
         }
 
-        if (preferences.getUseFirstLineAsHeader()) {
+        if (model.isFirstLineHeader()) {
             new MenuItem(tableHeaderMenu, SWT.SEPARATOR);
 
             // create menu item to delete column
