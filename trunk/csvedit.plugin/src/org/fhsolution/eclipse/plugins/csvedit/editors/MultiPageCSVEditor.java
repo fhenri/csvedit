@@ -59,7 +59,6 @@ import org.fhsolution.eclipse.plugins.csvedit.filter.CSVTableFilter;
 import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 import org.fhsolution.eclipse.plugins.csvedit.model.ICsvFileModelListener;
-import org.fhsolution.eclipse.plugins.csvedit.model.ICsvOptionsProvider;
 import org.fhsolution.eclipse.plugins.csvedit.page.DeleteColumnPage;
 import org.fhsolution.eclipse.plugins.csvedit.page.InsertColumnPage;
 import org.fhsolution.eclipse.plugins.csvedit.providers.CSVContentProvider;
@@ -93,8 +92,6 @@ implements IResourceChangeListener {
     private Menu tableHeaderMenu;
 
     private AbstractCSVFile model;
-
-    protected ICsvOptionsProvider preferences;
 
     /**
      *
