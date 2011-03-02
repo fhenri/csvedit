@@ -21,13 +21,25 @@ import org.fhsolution.eclipse.plugins.csvedit.model.AbstractCSVFile;
 
 public class DefaultCSVMultipageEditor extends MultiPageCSVEditor {
 
+    PreferencesCSVOptionsProvider preferences;
+
     /**
      * Create the CSV file
      */
     protected AbstractCSVFile createCSVFile()
     {
-        PreferencesCSVOptionsProvider preferences = new PreferencesCSVOptionsProvider();
+        preferences = new PreferencesCSVOptionsProvider();
         return new DefaultCSVFile(preferences);
     }
 
+    /**
+     * Create the different tab for the multi editor and set the focus to the
+     * page according to user preferences.
+     *
+     * @see org.fhsolution.eclipse.plugins.csvedit.editors.MultiPageCSVEditor#createPages()
+     */
+    protected void createPages () {
+        super.createPages();
+        setActivePage(preferences.getDefaultPage());
+    }
 }

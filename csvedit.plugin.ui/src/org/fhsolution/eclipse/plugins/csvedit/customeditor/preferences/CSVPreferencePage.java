@@ -15,6 +15,7 @@
 package org.fhsolution.eclipse.plugins.csvedit.customeditor.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
@@ -77,6 +78,17 @@ implements IWorkbenchPreferencePage {
         addField(new BooleanFieldEditor(
                 PreferenceConstants.CASE_SENSITIVE_SEARCH,
                 "&make search case sensitive",
+                getFieldEditorParent()));
+
+        String[][] pagesLabelsAndValues = new String[2][2];
+        pagesLabelsAndValues[0][0] = "Table";
+        pagesLabelsAndValues[0][1] = "0";
+        pagesLabelsAndValues[1][0] = "Source";
+        pagesLabelsAndValues[1][1] = "1";
+        addField(new ComboFieldEditor(
+                PreferenceConstants.DEFAULT_VIEW_PAGE,
+                "Select the default tab to view csv file:",
+                pagesLabelsAndValues,
                 getFieldEditorParent()));
 
     }
