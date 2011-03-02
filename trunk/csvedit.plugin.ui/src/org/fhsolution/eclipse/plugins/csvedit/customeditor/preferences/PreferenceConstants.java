@@ -27,4 +27,5 @@ public class PreferenceConstants {
     public static final String CUSTOM_DELIMITER = "delimiterPreference";
     public static final String COMMENT_CHAR = "commentCharPreference";
 
+    public static final String DEFAULT_VIEW_PAGE = "defaultPagePreference";
 }
