@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse CSV Editor UI contributions
 Bundle-SymbolicName: org.fhsolution.eclipse.plugins.csvedit.ui;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.1.0
 Bundle-Vendor: J. Andrés Pizarro
 Fragment-Host: org.fhsolution.eclipse.plugins.csvedit;bundle-version="1.0.3"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
