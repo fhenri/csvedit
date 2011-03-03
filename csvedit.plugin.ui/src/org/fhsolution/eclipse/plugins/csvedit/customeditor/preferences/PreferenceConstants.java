@@ -26,6 +26,8 @@ public class PreferenceConstants {
     public static final String CASE_SENSITIVE_SEARCH = "sensitiveSearchPreference";
     public static final String CUSTOM_DELIMITER = "delimiterPreference";
     public static final String COMMENT_CHAR = "commentCharPreference";
+    public static final String TEXT_QUALIFIER = "textQualifierPreference";
+    public static final String USE_QUALIFIER = "useQualifierPreference";
 
     public static final String DEFAULT_VIEW_PAGE = "defaultPagePreference";
 }

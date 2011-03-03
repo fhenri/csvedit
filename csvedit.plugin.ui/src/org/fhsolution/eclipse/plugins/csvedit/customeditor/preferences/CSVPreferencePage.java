@@ -56,6 +56,17 @@ implements IWorkbenchPreferencePage {
      */
     public void createFieldEditors() {
 
+        String[][] pagesLabelsAndValues = new String[2][2];
+        pagesLabelsAndValues[0][0] = "Table";
+        pagesLabelsAndValues[0][1] = "0";
+        pagesLabelsAndValues[1][0] = "Source";
+        pagesLabelsAndValues[1][1] = "1";
+        addField(new ComboFieldEditor(
+                PreferenceConstants.DEFAULT_VIEW_PAGE,
+                "Select the default tab to view csv file:",
+                pagesLabelsAndValues,
+                getFieldEditorParent()));
+
         addField(new BooleanFieldEditor(
                 PreferenceConstants.USE_FIRST_LINE_AS_HEADER,
                 "&Use the first line of the CSV file as the column headers",
@@ -68,6 +79,17 @@ implements IWorkbenchPreferencePage {
         customDelimiterField.setEmptyStringAllowed(false);
         addField(customDelimiterField);
 
+        StringFieldEditor textQualifierChar = new StringFieldEditor(
+                PreferenceConstants.TEXT_QUALIFIER,
+                "Define the character used as a text qualifier of the data:", 2, getFieldEditorParent());
+        customDelimiterField.setTextLimit(1);
+        customDelimiterField.setEmptyStringAllowed(false);
+        addField(textQualifierChar);
+        addField(new BooleanFieldEditor(
+                PreferenceConstants.USE_QUALIFIER,
+                "For the text qualifier to be used for all fields",
+                getFieldEditorParent()));
+
         StringFieldEditor commentChar = new StringFieldEditor(
                 PreferenceConstants.COMMENT_CHAR,
                 "Choose the character to use as a comment:", 2, getFieldEditorParent());
@@ -78,17 +100,6 @@ implements IWorkbenchPreferencePage {
         addField(new BooleanFieldEditor(
                 PreferenceConstants.CASE_SENSITIVE_SEARCH,
                 "&make search case sensitive",
-                getFieldEditorParent()));
-
-        String[][] pagesLabelsAndValues = new String[2][2];
-        pagesLabelsAndValues[0][0] = "Table";
-        pagesLabelsAndValues[0][1] = "0";
-        pagesLabelsAndValues[1][0] = "Source";
-        pagesLabelsAndValues[1][1] = "1";
-        addField(new ComboFieldEditor(
-                PreferenceConstants.DEFAULT_VIEW_PAGE,
-                "Select the default tab to view csv file:",
-                pagesLabelsAndValues,
                 getFieldEditorParent()));
 
     }

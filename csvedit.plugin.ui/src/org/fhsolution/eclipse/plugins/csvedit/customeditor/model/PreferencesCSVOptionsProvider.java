@@ -27,9 +27,11 @@ public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
 
     private boolean useFirstLineAsHeader;
     private boolean sensitiveSearch;
+    private boolean useQualifier;
     private String customDelimiter;
     private String commentChar;
     private String defaultPage;
+    private String textQualifier;
 
     public PreferencesCSVOptionsProvider ()
     {
@@ -41,6 +43,10 @@ public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
             Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CASE_SENSITIVE_SEARCH);
         commentChar =
             Activator.getDefault().getPreferenceStore().getString(PreferenceConstants.COMMENT_CHAR);
+        textQualifier =
+            Activator.getDefault().getPreferenceStore().getString(PreferenceConstants.TEXT_QUALIFIER);
+        useQualifier =
+            Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.USE_QUALIFIER);
 
         defaultPage =
             Activator.getDefault().getPreferenceStore().getString(PreferenceConstants.DEFAULT_VIEW_PAGE);
@@ -64,5 +70,13 @@ public class PreferencesCSVOptionsProvider implements ICsvOptionsProvider {
 
     public int getDefaultPage () {
         return Integer.parseInt(defaultPage);
+    }
+
+    public String getTextQualifier() {
+        return textQualifier;
+    }
+
+    public boolean useTextQualifier() {
+        return useQualifier;
     }
 }

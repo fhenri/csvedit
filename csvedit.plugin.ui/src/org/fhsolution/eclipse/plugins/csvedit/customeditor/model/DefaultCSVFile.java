@@ -62,4 +62,19 @@ public class DefaultCSVFile extends AbstractCSVFile {
         }
         return result;
     }
+
+    @Override
+    public char getTextQualifier() {
+        String qualifierChar = optionsProvider.getTextQualifier();
+        char result = Character.UNASSIGNED;
+        if (qualifierChar != null && qualifierChar != "") {
+           result = qualifierChar.charAt(0);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean useQualifier() {
+        return optionsProvider.useTextQualifier();
+    }
 }

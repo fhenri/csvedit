@@ -76,15 +76,15 @@ implements IResourceChangeListener {
     private boolean isPageModified;
 
     /** index of the source page */
-    private static final int indexSRC = 1;
+    public static final int indexSRC = 1;
     /** index of the table page */
-    private static final int indexTBL = 0;
+    public static final int indexTBL = 0;
 
     /** The text editor used in page 0. */
-    private TextEditor editor;
+    protected TextEditor editor;
 
     /** The table viewer used in page 1. */
-    private TableViewer tableViewer;
+    protected TableViewer tableViewer;
 
     private CSVTableSorter tableSorter;
     private CSVLabelProvider labelProvider;
