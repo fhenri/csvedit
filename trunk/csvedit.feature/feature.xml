@@ -2,17 +2,19 @@
 <feature
       id="org.fhsolution.eclipse.feature.csvedit"
       label="csvedit"
-      version="1.0.3"
-      provider-name="fhsolution"
+      version="1.1.0"
+      provider-name="www.fhsolution.com"
       plugin="org.fhsolution.eclipse.plugins.csvedit">
 
    <description url="http://code.google.com/p/csvedit/">
-      This aims to create a CSV file editor in Eclipse with features such as :
+      This aims to create a CSV file editor in Eclipse with features
+such as :
 - view csv file in source editor or table editor
 - easy search in table view
 - customize view with filtering column
 - sorting column
 - easily insert/delete rows
+- easily insert/delete columns
    </description>
 
    <copyright url="http://www.apache.org/licenses/LICENSE-2.0">
@@ -53,6 +55,14 @@ permissions and limitations under the License.
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.fhsolution.eclipse.plugins.csvedit.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>
