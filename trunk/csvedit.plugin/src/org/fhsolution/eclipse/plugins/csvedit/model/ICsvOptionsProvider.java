@@ -27,5 +27,9 @@ public interface ICsvOptionsProvider {
 
     String getCustomDelimiter();
 
+    String getTextQualifier();
+
+    boolean useTextQualifier();
+
     String getCommentChar();
 }

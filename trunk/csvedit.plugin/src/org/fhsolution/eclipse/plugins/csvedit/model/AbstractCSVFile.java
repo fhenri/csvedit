@@ -48,6 +48,7 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         listeners = new ArrayList<ICsvFileModelListener>();
     }
 
+    // TODO : all abstract methods should be moved to a specific interface
     /**
      * Check if first line in the file will be considered as the file header
      * @return true if the first line in the file represents the header
@@ -73,6 +74,19 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      *
      */
     public abstract char getCommentChar();
+
+    /**
+     * Get custom text qualifier to use as a text qualifier in the data
+     * @return the text qualifier character to use as a text qualifier in the data
+     */
+    public abstract char getTextQualifier();
+
+    /**
+     * check if the text qualifier has to be use for all fields or not
+     * @return true if the text qualifier is to be used for all data fields
+     */
+    public abstract boolean useQualifier();
+
 
     /**
      * @param text
@@ -104,6 +118,10 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
             csvReader.setComment(commentChar);
             csvReader.setUseComments(true);
         }
+
+        csvReader.setTextQualifier(getTextQualifier());
+        csvReader.setUseTextQualifier(true);
+
         return csvReader;
     }
 
@@ -149,7 +167,6 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     // ----------------------------------
     // Helper method on header management
     // ----------------------------------
-
     /**
      * @param entries
      */
@@ -188,7 +205,6 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     // ----------------------------------
     // Helper method on rows management
     // ----------------------------------
-
     /**
      *
      */
@@ -351,6 +367,8 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     {
         char delimiter = getCustomDelimiter();
         CsvWriter csvWriter = new CsvWriter(writer, delimiter);
+        csvWriter.setTextQualifier(getTextQualifier());
+        csvWriter.setForceQualifier(useQualifier());
         return csvWriter;
     }
 
