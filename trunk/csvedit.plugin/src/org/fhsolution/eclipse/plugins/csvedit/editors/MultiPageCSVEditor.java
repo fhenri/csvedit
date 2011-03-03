@@ -99,7 +99,6 @@ implements IResourceChangeListener {
     private final ICsvFileModelListener csvFileListener = new ICsvFileModelListener() {
         public void entryChanged(CSVRow row, int rowIndex) {
             //tableViewer.update(row, new String[] { Integer.toString(rowIndex) });
-            tableViewer.refresh();
             tableModified();
         }
     };
@@ -183,7 +182,6 @@ implements IResourceChangeListener {
                         tableViewer.getSelection()).getFirstElement();
                 if (row != null) {
                     model.addRowAfterElement(row);
-                    tableViewer.refresh();
                     tableModified();
                 }
             }
@@ -215,7 +213,6 @@ implements IResourceChangeListener {
         add.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 model.addRow();
-                tableViewer.refresh();
                 tableModified();
             }
         });
@@ -232,7 +229,6 @@ implements IResourceChangeListener {
                         tableViewer.getSelection()).getFirstElement();
                 if (row != null) {
                     model.removeRow(row);
-                    tableViewer.refresh();
                     tableModified();
                 }
             }
@@ -516,9 +512,9 @@ implements IResourceChangeListener {
      *
      */
     public void tableModified () {
-        boolean wasDirty = isDirty();
+        tableViewer.refresh();
         isPageModified = true;
-        if (!wasDirty) {
+        if (!isDirty()) {
             firePropertyChange(IEditorPart.PROP_DIRTY);
         }
     }
@@ -549,38 +545,7 @@ implements IResourceChangeListener {
             column.setResizable(true);
             column.setMoveable(true);
 
-            // create menu item
-            final MenuItem itemName = new MenuItem(tableHeaderMenu, SWT.CHECK);
-            itemName.setText(column.getText());
-            itemName.setSelection(column.getResizable());
-            itemName.addListener(SWT.Selection, new Listener() {
-                public void handleEvent(Event event) {
-                    if (itemName.getSelection()) {
-                        column.setWidth(100);
-                        column.setResizable(true);
-                    } else {
-                        column.setWidth(0);
-                        column.setResizable(false);
-                    }
-                }
-            });
-
-            // Setting the right sorter
-            column.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    tableSorter.setColumn(index);
-                    int dir = tableViewer.getTable().getSortDirection();
-                    if (tableViewer.getTable().getSortColumn() == column) {
-                        dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-                    } else {
-                        dir = SWT.DOWN;
-                    }
-                    tableViewer.getTable().setSortDirection(dir);
-                    tableViewer.getTable().setSortColumn(column);
-                    tableViewer.refresh();
-                }
-            });
+            addMenuItemToColumn(column, index);
         }
 
         if (model.isFirstLineHeader()) {
@@ -592,7 +557,7 @@ implements IResourceChangeListener {
             deleteColumnItem.setSelection(false);
             deleteColumnItem.addListener(SWT.Selection, new Listener() {
                 public void handleEvent(Event event) {
-                    // call delete current column page
+                    // call delete column page
                     DeleteColumnPage dcPage =
                         new DeleteColumnPage(getSite().getShell(), model.getArrayHeader());
                     if (dcPage.open() == InputDialog.OK) {
@@ -600,10 +565,10 @@ implements IResourceChangeListener {
                         for (String column : colToDelete) {
                             int colIndex = findColumnForName(column);
                             tableViewer.getTable().getColumn(colIndex).dispose();
+                            tableHeaderMenu.getItem(colIndex).dispose();
                             model.removeColumn(column);
                         }
-                        isPageModified = true;
-                        tableViewer.refresh();
+                        tableModified();
                     }
                 }
             });
@@ -614,14 +579,24 @@ implements IResourceChangeListener {
             insertColumnItem.setSelection(false);
             insertColumnItem.addListener(SWT.Selection, new Listener() {
                 public void handleEvent(Event event) {
-                    // call delete current column page
-                    InsertColumnPage dcPage =
+                    // call insert/add column page
+                    InsertColumnPage acPage =
                         new InsertColumnPage(getSite().getShell(), model.getArrayHeader());
-                    if (dcPage.open() == InputDialog.OK) {
-                        String colToInsert = dcPage.getColumnNewName();
+                    if (acPage.open() == InputDialog.OK) {
+                        String colToInsert = acPage.getColumnNewName();
                         model.addColumn(colToInsert);
-                        isPageModified = true;
-                        tableViewer.refresh();
+
+                        tableViewer.setInput(model);
+                        final TableColumn column = new TableColumn(tableViewer.getTable(), SWT.LEFT);
+                        column.setText(colToInsert);
+                        column.setWidth(100);
+                        column.setResizable(true);
+                        column.setMoveable(true);
+
+                        addMenuItemToColumn(column, model.getColumnCount()-1);
+                        defineCellEditing();
+
+                        tableModified();
                     }
                 }
             });
@@ -636,6 +611,13 @@ implements IResourceChangeListener {
             }
         });
 
+        defineCellEditing();
+    }
+
+    /**
+     *
+     */
+    private void defineCellEditing () {
         String[] columnProperties = new String[model.getColumnCount()];
         CellEditor[] cellEditors = new CellEditor[model.getColumnCount()];
 
@@ -669,6 +651,45 @@ implements IResourceChangeListener {
         return index;
     }
 
+    /**
+     * @param column
+     * @param index
+     */
+    private void addMenuItemToColumn (final TableColumn column, final int index) {
+        // create menu item
+        final MenuItem itemName = new MenuItem(tableHeaderMenu, SWT.CHECK, index);
+        itemName.setText(column.getText());
+        itemName.setSelection(column.getResizable());
+        itemName.addListener(SWT.Selection, new Listener() {
+            public void handleEvent(Event event) {
+                if (itemName.getSelection()) {
+                    column.setWidth(100);
+                    column.setResizable(true);
+                } else {
+                    column.setWidth(0);
+                    column.setResizable(false);
+                }
+            }
+        });
+
+        // Setting the right sorter
+        column.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                tableSorter.setColumn(index);
+                int dir = tableViewer.getTable().getSortDirection();
+                if (tableViewer.getTable().getSortColumn() == column) {
+                    dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+                } else {
+                    dir = SWT.DOWN;
+                }
+                tableViewer.getTable().setSortDirection(dir);
+                tableViewer.getTable().setSortColumn(column);
+                tableViewer.refresh();
+            }
+        });
+
+    }
     /**
      * The <code>MultiPageEditorPart</code> implementation of this
      * <code>IWorkbenchPart</code> method disposes all nested editors.
