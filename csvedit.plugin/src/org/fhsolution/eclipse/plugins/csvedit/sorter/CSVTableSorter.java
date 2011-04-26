@@ -16,6 +16,7 @@ package org.fhsolution.eclipse.plugins.csvedit.sorter;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.SWT;
 import org.fhsolution.eclipse.plugins.csvedit.model.CSVRow;
 
 /**
@@ -27,8 +28,11 @@ public class CSVTableSorter extends ViewerSorter {
 
     private int propertyIndex;
     private static final int DESCENDING = 1;
+    private static final int ASCENDING = 0;
 
     private int direction = DESCENDING;
+
+    private boolean noSort = true;
 
     /**
      * Public Constructor
@@ -43,15 +47,17 @@ public class CSVTableSorter extends ViewerSorter {
      *
      * @param column columnId selected by the user.
      */
-    public void setColumn(int column) {
-        if (column == this.propertyIndex) {
-            // Same column as last sort; toggle the direction
-            direction = 1 - direction;
-        } else {
+    public void setColumn(int column, int dir) {
+        if (dir == SWT.NONE) {
+            noSort = true;
+            return;
+        }
+        noSort = false;
+        if (column != this.propertyIndex) {
             // New column; do an ascending sort
             this.propertyIndex = column;
-            direction = DESCENDING;
         }
+        this.direction = dir == SWT.UP ? ASCENDING : DESCENDING;
     }
 
     /**
@@ -60,7 +66,7 @@ public class CSVTableSorter extends ViewerSorter {
     @Override
     public int compare(Viewer viewer, Object e1, Object e2) {
         // this is necessary at opening of csv file so column are not sorted.
-        if (propertyIndex == -1) return 0;
+        if (propertyIndex == -1 || noSort) return 0;
 
         String row1 = ((CSVRow) e1).getElementAt(propertyIndex);
         String row2 = ((CSVRow) e2).getElementAt(propertyIndex);

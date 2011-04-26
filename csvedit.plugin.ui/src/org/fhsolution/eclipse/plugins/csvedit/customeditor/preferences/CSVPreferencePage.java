@@ -99,7 +99,7 @@ implements IWorkbenchPreferencePage {
 
         addField(new BooleanFieldEditor(
                 PreferenceConstants.CASE_SENSITIVE_SEARCH,
-                "&make search case sensitive",
+                "&make filtering case sensitive",
                 getFieldEditorParent()));
 
     }

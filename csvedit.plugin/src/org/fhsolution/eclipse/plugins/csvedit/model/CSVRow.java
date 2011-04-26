@@ -33,6 +33,11 @@ public class CSVRow {
     /** Row changes listener */
     private final IRowChangesListener listener;
 
+    /** track of commented line */
+    private boolean isCommentLine;
+
+    private boolean isHeader;
+
     /**
      * Constructor
      * @param line
@@ -131,6 +136,26 @@ public class CSVRow {
         entries.remove(index);
     }
 
+    public void setCommentLine (boolean comment) {
+        isCommentLine = comment;
+    }
+
+    public boolean isCommentLine () {
+        return isCommentLine;
+    }
+
+    public void setHeader (boolean header) {
+        isHeader = header;
+    }
+
+    public boolean isHeader () {
+        return isHeader;
+    }
+
+    public String getComment () {
+        return entries.get(0).substring(1);
+    }
+
     /**
      * Give the String representation of a CSVRow object.
      *
@@ -163,6 +188,7 @@ public class CSVRow {
      */
    @Override
     public boolean equals (Object anObject) {
+        //System.out.println("compare:\n[" + this + "] and\n[" + anObject + "]");
         if (!(anObject instanceof CSVRow)) {
             return false;
         }

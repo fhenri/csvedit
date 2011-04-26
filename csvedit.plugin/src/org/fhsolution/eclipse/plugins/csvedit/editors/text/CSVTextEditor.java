@@ -28,6 +28,8 @@ public class CSVTextEditor extends TextEditor {
      */
     public CSVTextEditor(char delimiter)
     {
-        setSourceViewerConfiguration(new CSVTextSourceViewerConfiguration(delimiter, getPreferenceStore()));
+        CSVTextSourceViewerConfiguration csvTextConfig =
+            new CSVTextSourceViewerConfiguration(delimiter, getPreferenceStore());
+        setSourceViewerConfiguration(csvTextConfig);
     }
 }
