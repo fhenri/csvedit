@@ -14,7 +14,6 @@
  */
 package org.fhsolution.eclipse.plugins.csvedit.editors;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -47,11 +46,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.fhsolution.eclipse.plugins.csvedit.editors.text.CSVTextEditor;
@@ -113,10 +110,11 @@ implements IResourceChangeListener {
     }
 
     /**
-     * Create the CSV file object
-     * @return and {@link AbstractCSVFile} object which provides the contents
+     * Create the CSV file object.
+     * Class that extends the MultiPageCSVEditor <i>must</i> implement this class.
+     * @return an {@link AbstractCSVFile} object which provides the contents
      * as well as some formatting information such as the delimiter and
-     * extra metainformation
+     * extra meta information
      */
     protected abstract AbstractCSVFile createCSVFile();
 
@@ -249,11 +247,6 @@ implements IResourceChangeListener {
         });
         */
         /*
-        // case sensitive search ?
-        Label sensitiveLabel = new Label(canvas, SWT.NONE);
-        sensitiveLabel.setText("case sensitive");
-        final Button sensitiveBtn = new Button(canvas, SWT.CHECK);
-        sensitiveBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 
         // manage 1st line - should only be visible if global option is set
         if (pref.getUseFirstLineAsHeader()) {
@@ -475,11 +468,6 @@ implements IResourceChangeListener {
         setPageText(indexTBL, "CSV Table");
     }
 
-    /*
-    private void filterTextForSearch() {
-    }
-    */
-
     /**
      * Set Name of the file to the tab
      */
@@ -676,15 +664,26 @@ implements IResourceChangeListener {
         column.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                tableSorter.setColumn(index);
                 int dir = tableViewer.getTable().getSortDirection();
-                if (tableViewer.getTable().getSortColumn() == column) {
-                    dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
-                } else {
+                switch (dir) {
+                case SWT.UP :
                     dir = SWT.DOWN;
+                    break;
+                case SWT.DOWN :
+                    dir = SWT.NONE;
+                    break;
+                case SWT.NONE :
+                    dir = SWT.UP;
+                    break;
                 }
+                tableSorter.setColumn(index, dir);
                 tableViewer.getTable().setSortDirection(dir);
-                tableViewer.getTable().setSortColumn(column);
+                if (dir == SWT.NONE) {
+                    tableViewer.getTable().setSortColumn(null);
+                }
+                else {
+                    tableViewer.getTable().setSortColumn(column);
+                }
                 tableViewer.refresh();
             }
         });
@@ -757,17 +756,6 @@ implements IResourceChangeListener {
     }
 
     /**
-     * Sets the cursor and selection state for this editor as specified by
-     * the given marker
-     *
-     * @param marker
-     */
-    public void gotoMarker (IMarker marker) {
-        setActivePage(indexTBL);
-        IDE.gotoMarker(getEditor(indexTBL), marker);
-    }
-
-    /**
      * Initializes this editor with the given editor site and input.
      * This method is automatically called shortly after editor construction;
      * it marks the start of the editor's lifecycle.
@@ -778,8 +766,16 @@ implements IResourceChangeListener {
      * @see org.eclipse.ui.part.MultiPageEditorPart#init(org.eclipse.ui.IEditorSite, org.eclipse.ui.IEditorInput)
      */
     public void init (IEditorSite site, IEditorInput editorInput) throws PartInitException {
+        /*
+        String message = "Input is " + editorInput + " of instance " + editorInput.getClass().getName();
+        IStatus status = new Status(IStatus.ERROR, "csvedit", IStatus.ERROR, message, null);
+        Activator.getDefault().getLog().log(status);
+        */
+
+        /*
         if (!(editorInput instanceof IFileEditorInput))
             throw new PartInitException("Invalid Input: Must be IFileEditorInput");
+        */
         super.init(site, editorInput);
     }
 

@@ -44,8 +44,8 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         nbOfColumns = 1;
         displayFirstLine = true;
         rows = new ArrayList<CSVRow>();
-        header = new ArrayList<String>();
         listeners = new ArrayList<ICsvFileModelListener>();
+        header = new ArrayList<String>();
     }
 
     // TODO : all abstract methods should be moved to a specific interface
@@ -116,7 +116,8 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         char commentChar = getCommentChar();
         if (commentChar != Character.UNASSIGNED) {
             csvReader.setComment(commentChar);
-            csvReader.setUseComments(true);
+            // prevent loss of comment in csv source file
+            csvReader.setUseComments(false);
         }
 
         csvReader.setTextQualifier(getTextQualifier());
@@ -138,16 +139,22 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
                 csvReader.skipLine();
             }
 
-            if (isFirstLineHeader()) {
-                csvReader.readHeaders();
-                String[] rowValues = csvReader.getHeaders();
-                populateHeaders(rowValues);
-            }
-
+            boolean setHeader = false;
             while (csvReader.readRecord()) {
                 String[] rowValues = csvReader.getValues();
                 CSVRow csvRow = new CSVRow(rowValues, this);
+                if (!rowValues[0].startsWith(String.valueOf(getCommentChar()))) {
+                    if (isFirstLineHeader() && !setHeader) {
+                        setHeader = true;
+                        csvRow.setHeader(true);
+                        populateHeaders(rowValues);
+                    }
+                }
+                else {
+                    csvRow.setCommentLine(true);
+                }
                 rows.add(csvRow);
+
                 if (rowValues.length > nbOfColumns) {
                     nbOfColumns = rowValues.length;
                 }
@@ -226,11 +233,12 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     public void addRowAfterElement (CSVRow row) {
         CSVRow newRow = CSVRow.createEmptyLine(nbOfColumns,  this);
         int indexRow = findRow(row);
+        System.out.println("index of row :" + indexRow);
         if (indexRow != -1) {
             rows.add(indexRow, newRow);
         }
         else {
-            addRow(row);
+            addRow(newRow);
         }
     }
 
@@ -239,13 +247,14 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      * @return
      */
     public int findRow (CSVRow findRow) {
-        for (int i = 0; i < getArrayRows().length; i++) {
+        for (int i = 0; i <= getArrayRows(true).length; i++) {
             CSVRow row = getRowAt(i);
-            if (row.equals(findRow)) return i;
+            if (row.equals(findRow)) {
+                return i;
+            }
         }
         return -1;
     }
-
 
     /**
      * @return
@@ -257,8 +266,22 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     /**
      * @return
      */
-    public Object[] getArrayRows() {
-        return rows.toArray();
+    public Object[] getArrayRows (boolean includeCommentLine) {
+        // filter header and comment rows
+        ArrayList<CSVRow> myrows = new ArrayList<CSVRow>();
+        for (CSVRow row : rows) {
+            // should we return the comment line
+            if (row.isCommentLine()) {
+                if (includeCommentLine) {
+                    myrows.add(row);
+                }
+            }
+            // we do not add the header line
+            else if (!row.isHeader()) {
+                myrows.add(row);
+            }
+        }
+        return myrows.toArray();
     }
 
     /**
@@ -328,7 +351,10 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
             nbOfColumns--;
         }
         for (CSVRow row : rows) {
-            row.removeElementAt(colIndex);
+            if (!row.isCommentLine()) {
+                System.out.println("remove elmt:["+colIndex+"] in row [" + row +"]");
+                row.removeElementAt(colIndex);
+            }
         }
     }
 
@@ -338,7 +364,9 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
      * @param colIndex
      */
     public void removeColumn (String columnName) {
-        if (columnName == null) return;
+        if (columnName == null) {
+            return;
+        }
         int colIndex = header.indexOf(columnName);
         removeColumn(colIndex);
     }
@@ -369,6 +397,7 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         CsvWriter csvWriter = new CsvWriter(writer, delimiter);
         csvWriter.setTextQualifier(getTextQualifier());
         csvWriter.setForceQualifier(useQualifier());
+        csvWriter.setComment(getCommentChar());
         return csvWriter;
     }
 
@@ -381,6 +410,7 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
         try {
             CsvWriter clw = initializeWriter(sw);
 
+            /*
             if (isFirstLineHeader() && header.size() > 0) {
                 String[] headerArray = new String[header.size()];
                 for (int i=0; i<header.size(); i++) {
@@ -388,8 +418,13 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
                 }
                 clw.writeRecord(headerArray);
             }
+            */
             for (CSVRow row : rows) {
-                clw.writeRecord(row.getEntriesAsArray());
+                if (row.isCommentLine()) {
+                    clw.writeComment(row.getComment());
+                } else {
+                    clw.writeRecord(row.getEntriesAsArray());
+                }
             }
             clw.close();
             sw.close();
