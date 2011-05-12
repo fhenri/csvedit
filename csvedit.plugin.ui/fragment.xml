@@ -39,4 +39,21 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <category
+            id="org.fhsolution.eclipse.plugins.csvedit.ui.importcsv.ImportExcel"
+            name="CSV">
+      </category>
+      <wizard
+            category="org.fhsolution.eclipse.plugins.csvedit.ui.importcsv.ImportExcel"
+            class="org.fhsolution.eclipse.plugins.csvedit.ui.importcsv.ImportExcel"
+            icon="icons/csv.gif"
+            id="org.fhsolution.eclipse.plugins.csvedit.ui.importcsv.ImportExcel"
+            name="Import Excel File">
+         <description>
+            Import a file from the local file system into the workspace.
+         </description>
+      </wizard>
+   </extension>
 </fragment>
