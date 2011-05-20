@@ -21,8 +21,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -84,7 +86,6 @@ implements IResourceChangeListener {
     protected TableViewer tableViewer;
 
     private CSVTableSorter tableSorter;
-    private CSVLabelProvider labelProvider;
 
     private Menu tableHeaderMenu;
 
@@ -289,7 +290,12 @@ implements IResourceChangeListener {
         searchText.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent ke) {
                 tableFilter.setSearchText(searchText.getText(), model.getSensitiveSearch());
-                labelProvider.setSearchText(searchText.getText());
+                String filterText = searchText.getText();
+                for (int i = 0; i<tableViewer.getColumnProperties().length; i++)
+                {
+                  CellLabelProvider labelProvider = tableViewer.getLabelProvider(i);
+                  ((CSVLabelProvider) labelProvider).setSearchText(filterText);
+                }
                 tableViewer.refresh();
             }
         });
@@ -481,10 +487,7 @@ implements IResourceChangeListener {
      * @throws Exception
      */
     private void populateTablePage () throws Exception {
-
         tableViewer.setContentProvider(new CSVContentProvider());
-        labelProvider = new CSVLabelProvider();
-        tableViewer.setLabelProvider(labelProvider);
 
         // make the selection available
         getSite().setSelectionProvider(tableViewer);
@@ -511,12 +514,6 @@ implements IResourceChangeListener {
      *
      */
     private void updateTableFromTextEditor () {
-        // TODO Improve performance in this method
-
-        for (TableColumn column : tableViewer.getTable().getColumns()) {
-            column.dispose();
-        }
-
         // PropertyFile propertyFile = (PropertyFile) treeViewer.getInput();
         model.removeModelListener(csvFileListener);
 
@@ -526,14 +523,14 @@ implements IResourceChangeListener {
         tableHeaderMenu = new Menu(tableViewer.getTable());
         // create columns
         for (int i = 0; i < model.getHeader().size(); i++) {
-            final TableColumn column = new TableColumn(tableViewer.getTable(), SWT.LEFT);
+            final TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.LEFT);
             final int index = i;
-            column.setText(model.getHeader().get(i));
-            column.setWidth(100);
-            column.setResizable(true);
-            column.setMoveable(true);
-
-            addMenuItemToColumn(column, index);
+            column.getColumn().setText(model.getHeader().get(i));
+            column.getColumn().setWidth(100);
+            column.getColumn().setResizable(true);
+            column.getColumn().setMoveable(true);
+            column.setLabelProvider(new CSVLabelProvider());
+            addMenuItemToColumn(column.getColumn(), index);
         }
 
         if (model.isFirstLineHeader()) {
