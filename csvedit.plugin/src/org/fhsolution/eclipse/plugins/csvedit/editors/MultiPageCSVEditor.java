@@ -504,10 +504,12 @@ implements IResourceChangeListener {
      */
     public void tableModified () {
         tableViewer.refresh();
+        boolean wasPageModified = isPageModified;
         isPageModified = true;
-        if (!isDirty()) {
+        if (!wasPageModified) {
             firePropertyChange(IEditorPart.PROP_DIRTY);
-        }
+            editor.validateEditorInputState(); // will invoke: FileModificationValidator.validateEdit() (expected by some repository providers)
+       }
     }
 
     /**
@@ -804,7 +806,7 @@ implements IResourceChangeListener {
                     updateTextEditorFromTable();
                 break;
             case indexTBL :
-                if (isPageModified)
+                if (isDirty())
                     updateTableFromTextEditor();
                 break;
             }
