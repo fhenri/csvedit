@@ -523,16 +523,23 @@ implements IResourceChangeListener {
                 editor.getEditorInput()).get());
 
         tableHeaderMenu = new Menu(tableViewer.getTable());
-        // create columns
-        for (int i = 0; i < model.getHeader().size(); i++) {
-            final TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.LEFT);
-            final int index = i;
-            column.getColumn().setText(model.getHeader().get(i));
-            column.getColumn().setWidth(100);
-            column.getColumn().setResizable(true);
-            column.getColumn().setMoveable(true);
-            column.setLabelProvider(new CSVLabelProvider());
-            addMenuItemToColumn(column.getColumn(), index);
+        TableColumn[] columns = tableViewer.getTable().getColumns();
+        if (columns.length > 0) { // if table header columns already created
+			// update column header text
+			for (int i = 0; i < model.getHeader().size(); i++)
+				columns[i].setText(model.getHeader().get(i));
+        } else {
+	        // create columns
+	        for (int i = 0; i < model.getHeader().size(); i++) {
+	            final TableViewerColumn column = new TableViewerColumn(tableViewer, SWT.LEFT);
+	            final int index = i;
+	            column.getColumn().setText(model.getHeader().get(i));
+	            column.getColumn().setWidth(100);
+	            column.getColumn().setResizable(true);
+	            column.getColumn().setMoveable(true);
+	            column.setLabelProvider(new CSVLabelProvider());
+	            addMenuItemToColumn(column.getColumn(), index);
+	        }
         }
 
         if (model.isFirstLineHeader()) {
