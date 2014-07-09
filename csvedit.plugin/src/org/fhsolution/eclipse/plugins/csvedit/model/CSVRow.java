@@ -50,6 +50,19 @@ public class CSVRow {
 
     /**
      * Constructor
+     * @param row
+     * @param listener
+     */
+    public CSVRow(CSVRow row, IRowChangesListener listener){
+		
+    	this.entries = (ArrayList<String>)row.entries.clone();
+		this.listener = listener;
+		this.isCommentLine = row.isCommentLine;
+		this.isHeader = row.isHeader;
+    }
+    
+    /**
+     * Constructor
      * @param lineElements
      * @param listener
      */
@@ -187,19 +200,25 @@ public class CSVRow {
      * @see java.lang.Object#equals(java.lang.Object)
      */
    @Override
-    public boolean equals (Object anObject) {
-        //System.out.println("compare:\n[" + this + "] and\n[" + anObject + "]");
-        if (!(anObject instanceof CSVRow)) {
-            return false;
-        }
+	public boolean equals(Object anObject) {
+	   
+		// The commented lines implies that if two rows have the same content,
+		// the cell editor will modify
+		// the first one found instead of the focused one
+		// each row should be considered as unique even if they have the same content
 
-        CSVRow thisRow = (CSVRow) anObject;
-        for (int i=0; i<getNumberOfElements(); i++) {
-            if (!(getElementAt(i).equals(thisRow.getElementAt(i)))) {
-                return false;
-            }
-        }
-        return true;
-    }
+		/*
+		 * AttributeRow thisRow = (AttributeRow) anObject; for (int i=0;
+		 * i<getNumberOfElements(); i++) { if
+		 * (!(getElementAt(i).equals(thisRow.getElementAt(i)))) { return false;
+		 * } } return true;
+		 */
+	   
+		if (this == anObject)
+			return true;
+	
+		else
+			return false;
+	}
 
 }

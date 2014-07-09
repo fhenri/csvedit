@@ -212,6 +212,21 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     // ----------------------------------
     // Helper method on rows management
     // ----------------------------------
+    
+    /**
+     * @param row
+     */
+    public void duplicateRow (CSVRow row) {
+        CSVRow newRow = new CSVRow(row,  this);
+        int indexRow = findRow(row);
+        if (indexRow != -1) {
+            rows.add(indexRow, newRow);
+        }
+        else {
+            addRow(newRow);
+        }
+    }
+    
     /**
      *
      */
@@ -233,7 +248,7 @@ public abstract class AbstractCSVFile implements IRowChangesListener {
     public void addRowAfterElement (CSVRow row) {
         CSVRow newRow = CSVRow.createEmptyLine(nbOfColumns,  this);
         int indexRow = findRow(row);
-        System.out.println("index of row :" + indexRow);
+        
         if (indexRow != -1) {
             rows.add(indexRow, newRow);
         }

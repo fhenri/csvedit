@@ -158,7 +158,7 @@ implements IResourceChangeListener {
         // XXX move all the creation into its own component
         Canvas canvas = new Canvas(parent, SWT.None);
 
-        GridLayout layout = new GridLayout(5, false);
+        GridLayout layout = new GridLayout(6, false);
         canvas.setLayout(layout);
 
         // create the header part with the search function and Add/Delete rows
@@ -169,6 +169,24 @@ implements IResourceChangeListener {
                 new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 
         // Create and configure the buttons
+		Button duplicate = new Button(canvas, SWT.PUSH | SWT.CENTER);
+		duplicate.setText("Duplicate");
+		duplicate.setToolTipText("Duplicate the current row");
+		GridData buttonDuplicateGridData = new GridData(
+				GridData.HORIZONTAL_ALIGN_BEGINNING);
+		buttonDuplicateGridData.widthHint = 80;
+		duplicate.setLayoutData(buttonDuplicateGridData);
+		duplicate.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				CSVRow row = (CSVRow) ((IStructuredSelection) tableViewer
+						.getSelection()).getFirstElement();
+				if (row != null) {
+					model.duplicateRow(row);
+					tableModified();
+				}
+			}
+		});
+        
         Button insert = new Button(canvas, SWT.PUSH | SWT.CENTER);
         insert.setText("Insert Row");
         insert.setToolTipText("Insert a new row before the current one");
@@ -224,12 +242,17 @@ implements IResourceChangeListener {
         delete.setLayoutData(buttonDelGridData);
         delete.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                CSVRow row = (CSVRow) ((IStructuredSelection)
-                        tableViewer.getSelection()).getFirstElement();
-                if (row != null) {
-                    model.removeRow(row);
-                    tableModified();
-                }
+            	
+            	CSVRow row = (CSVRow) ((IStructuredSelection) tableViewer
+						.getSelection()).getFirstElement();
+				
+				while(row != null){
+					row = (CSVRow) ((IStructuredSelection) tableViewer.getSelection()).getFirstElement();
+					if (row != null) {
+						model.removeRow(row);
+						tableModified();
+					}
+				}
             }
         });
         /*
@@ -294,7 +317,9 @@ implements IResourceChangeListener {
                 for (int i = 0; i<tableViewer.getColumnProperties().length; i++)
                 {
                   CellLabelProvider labelProvider = tableViewer.getLabelProvider(i);
-                  ((CSVLabelProvider) labelProvider).setSearchText(filterText);
+                  if(labelProvider != null){
+                	  ((CSVLabelProvider) labelProvider).setSearchText(filterText);
+                  }
                 }
                 tableViewer.refresh();
             }
@@ -464,7 +489,7 @@ implements IResourceChangeListener {
         // Layout the viewer
         GridData gridData = new GridData();
         gridData.verticalAlignment = GridData.FILL;
-        gridData.horizontalSpan = 5;
+        gridData.horizontalSpan = 6;
         gridData.grabExcessHorizontalSpace = true;
         gridData.grabExcessVerticalSpace = true;
         gridData.horizontalAlignment = GridData.FILL;
@@ -526,8 +551,13 @@ implements IResourceChangeListener {
         TableColumn[] columns = tableViewer.getTable().getColumns();
         if (columns.length > 0) { // if table header columns already created
 			// update column header text
-			for (int i = 0; i < model.getHeader().size(); i++)
-				columns[i].setText(model.getHeader().get(i));
+			for (int i = 0; i < model.getHeader().size(); i++){
+				if(i < columns.length){
+					columns[i].setText(model.getHeader().get(i));
+					final int index = i;
+					addMenuItemToColumn(columns[i], index);
+				}
+			}
         } else {
 	        // create columns
 	        for (int i = 0; i < model.getHeader().size(); i++) {
