@@ -878,7 +878,7 @@ implements IResourceChangeListener {
             break;
         }
     }
-
+    
     /**
      * Closes all project files on project close.
      *
